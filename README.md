@@ -8,9 +8,9 @@ An HTTP client library for node.js.  Hides most of the complexity of creating an
 Example usage
 -------------
 
-var sys = require('sys'),
-    rest = require('./restler');
+  var sys = require('sys'),
+      rest = require('./restler');
 
-rest.get('http://google.com', function(data) {
-  sys.puts(data);
-});
+  rest.get('http://google.com', function(data) {
+    sys.puts(data);
+  });
