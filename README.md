@@ -14,3 +14,18 @@ Example usage
     rest.get('http://google.com', function(data) {
       sys.puts(data);
     });
+
+    rest.get('http://twaud.io/api/v1/users/danwrong.json', function(data) {
+      sys.puts(data[0].message); // auto convert to object
+    });
+    
+    rest.get('http://twaud.io/api/v1/users/danwrong.xml', function(data) {
+      sys.puts(data[0].sounds[0].sound[0].message); // auto convert to object
+    });
+    
+    rest.post('http://user:pass@service.com/action', {
+      data: { id: 334 },
+      complete: function(data) {
+        // process response
+      }
+    })
