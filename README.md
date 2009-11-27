@@ -90,10 +90,9 @@ Example usage
     rest.post('http://user:pass@service.com/action', {
       data: { id: 334 },
       complete: function(data) {
-        // process response
         if (this.statusCode == 201) {
-          // callback is executed in the scope of the request so you can get to
-          // the original request info
+          // callback is executed in the scope of the response so you can get to
+          // the original response info
         }
       }
     });
