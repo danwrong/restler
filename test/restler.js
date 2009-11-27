@@ -79,6 +79,15 @@ helper.testCase("Basic Tests", helper.echoServer, {
       }
     });
   },
+  testRequestShouldSendBasicAuthIfInURL: function(host, test) {
+    var port = host.match(/\:(\d+)/)[1];
+    host = "http://danwrong:flange@localhost:" + port;
+    rest.post(host, {
+      complete: function(data) {
+        test.assertTrue(/authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/.test(data), 'should have auth header')
+      }
+    });
+  },
 });
 
 
