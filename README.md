@@ -91,6 +91,10 @@ Example usage
       data: { id: 334 },
       complete: function(data) {
         // process response
+        if (this.statusCode == 201) {
+          // callback is executed in the scope of the request so you can get to
+          // the original request info
+        }
       }
     });
 
