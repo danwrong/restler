@@ -107,3 +107,10 @@ TODO
 * Automatically serialize multipart-form-encoded requests so you can send files etc.
 * Deal with SSL transparently
 * What do you need? Let me know or fork.
+
+
+Acknowledgements
+----------------
+
+Restler uses base64, querystring and uri from Narwhal, yaml by TJ Holowaychuk and xml2json by Thomas Frank.  See each of the files
+in the vendor directory for their licences.
