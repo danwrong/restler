@@ -58,6 +58,8 @@ helper.testCase("Basic Tests", helper.echoServer, {
     rest.post(host, {
       data: { q: 'balls' },
       complete: function(data) {
+        test.assertTrue(/content-type\: application\/x-www-form-urlencoded/.test(data), 'should set content-type');
+        test.assertTrue(/content-length\: 7/.test(data), 'should set content-length');
         test.assertTrue(/\r\n\r\nq=balls/.test(data), 'should have balls in the body')
       }
     });
@@ -88,6 +90,20 @@ helper.testCase("Basic Tests", helper.echoServer, {
       }
     });
   },
+});
+
+helper.testCase('Multipart Tests', helper.echoServer, {
+  testMultipartRequestWithSimpleVars: function(host, test) {
+    rest.post(host, {
+      data: { a: 1, b: 'thing' },
+      multipart: true,
+      complete: function(data) {
+        test.assertTrue(/content-type\: multipart\/form-data/.test(data), 'should set content type')
+        test.assertTrue(/name="a"(\s)+1/.test(data), 'should send a=1');
+        test.assertTrue(/name="b"(\s)+thing/.test(data), 'should send b=thing');
+      }
+    })
+  }
 });
 
 
