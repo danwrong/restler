@@ -114,16 +114,26 @@ exports.testCase = function(caseName, serverFunc, tests) {
     return assertions;
   }
   
+  if (typeof serverFunc != 'function') {
+    tests = serverFunc;
+    serverFunc = null;
+  }
+  
   for (var name in tests) {
     if (name.match(/^test/)) {
-      var res = serverFunc(), host = res[0], 
-          server = res[1];
-      tests[name](host, wrapAssertions(name));
+      if (typeof serverFunc == 'function') {
+        var res = serverFunc(), host = res[0], 
+            server = res[1];
+        tests[name](host, wrapAssertions(name));
+      } else {
+        tests[name](wrapAssertions(name));
+      }
     }
   }
   
   process.addListener('exit', function() {
-    sys.puts(caseName + " - Assertions: " + testCount + " Passed: " + passes, " Failed: " + fails);
+    var passFail = (testCount == passes) ? ' \033[0;32mGOOD!\033[1;37m' : ' \033[0;31mBAD!\033[1;37m';
+    sys.puts(caseName + " - Assertions: " + testCount + " Passed: " + passes + " Failed: " + fails + passFail);
   });
 }
 
