@@ -14,7 +14,10 @@ exports.echoServer = function() {
       echo += chunk;
     });
     request.addListener('complete', function() {
-      response.sendHeader(200, {
+      
+      var requestedCode = request.headers['x-give-me-status'];
+      
+      response.sendHeader(requestedCode || 200, {
         'Content-Type': 'text/plain',
         'Content-Length': echo.length
       });

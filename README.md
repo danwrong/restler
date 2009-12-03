@@ -21,7 +21,6 @@ Features
 * Deals with basic auth for you, just provide username and password options
     
     
-
 API
 ---
 
@@ -33,7 +32,8 @@ that emits events:
 * _complete_ emitted when the request has finished whether it was successful or not.  Gets passed the response data and the response as arguments.
 * _success_ emitted when the request was successful.  Gets passed the response data and the response as arguments.
 * _error_ emitted when the request was unsuccessful.  Gets passed the response data and the response as arguments.
-  
+* _2XX, 3XX, 4XX, 5XX etc_ emitted for all requests with response codes in the range.  Eg. 2XX emitted for 200, 201, 203
+* _actual response code_ there is an event emitted for every single response code.  eg.  404, 201, etc.
 
 ### get(url, options)
 

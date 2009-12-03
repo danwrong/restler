@@ -75,6 +75,30 @@ helper.testCase("Basic Tests", helper.echoServer, {
       test.assertTrue(/authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/.test(data), 'should have auth header')
     });
   },
+  testRequestShouldFire2XXAnd200Events: function(host, test) {
+    var count = 0;
+    
+    rest.get(host).addListener('2XX', function() {
+      count++;
+    }).addListener('200', function() {
+      count++;
+    }).addListener('complete', function() {
+      test.assertEquals(2, count);
+    });
+  },
+  testRequestShouldFireError4XXand404EventsFor404: function(host, test) {
+    var count = 0;
+    
+    rest.get(host, { headers: { 'X-Give-Me-Status': 404 }}).addListener('error', function() {
+      count++;
+    }).addListener('4XX', function() {
+      count++;
+    }).addListener('404', function() {
+      count++;
+    }).addListener('complete', function() {
+      test.assertEquals(3, count);
+    });
+  }
 });
  
 helper.testCase('Multipart Tests', helper.echoServer, {
