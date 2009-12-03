@@ -11,6 +11,8 @@ function parseMultipart(data, callback) {
     data: data
   });
   
+  sys.p(stream);
+  
   stream.addListener('part', function(part) {
     sys.p(part);
     var buffer = '';
