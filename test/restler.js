@@ -4,139 +4,120 @@ var helper = require ('./test_helper'),
     
 helper.testCase("Basic Tests", helper.echoServer, {
   testRequestShouldTakePath: function(host, test) {
-    rest.get(host + '/thing', function(data) {
+    rest.get(host + '/thing').addListener('complete', function(data) {
       test.assertTrue(/^GET \/thing/.test(data), 'should hit /thing');
     });
   },
   testRequestShouldWorkWithNoPath: function(host, test) {
-    rest.get(host, function(data) {
-      test.assertTrue(/^GET \//.test(data), 'should hit /');
-    });
+   rest.get(host).addListener('complete', function(data) {
+     test.assertTrue(/^GET \//.test(data), 'should hit /');
+   });
   },
   testRequestShouldWorkPreserveQueryStringInURL: function(host, test) {
-    rest.get(host + '/thing?boo=yah', function(data) {
-      test.assertTrue(/^GET \/thing\?boo\=yah/.test(data), 'should hit /thing?boo=yah');
-    });
+   rest.get(host + '/thing?boo=yah').addListener('complete', function(data) {
+     test.assertTrue(/^GET \/thing\?boo\=yah/.test(data), 'should hit /thing?boo=yah');
+   });
   },
   testRequestShouldBeAbleToGET: function(host, test) {
-    rest.get(host, function(data) {
-      test.assertTrue(/^GET/.test(data), 'should be GET');
-    });
+   rest.get(host).addListener('complete', function(data) {
+     test.assertTrue(/^GET/.test(data), 'should be GET');
+   });
   },
   testRequestShouldBeAbleToPUT: function(host, test) {
-    rest.put(host, function(data) {
-      test.assertTrue(/^PUT/.test(data), 'should be PUT');
-    });
+   rest.put(host).addListener('complete', function(data) {
+     test.assertTrue(/^PUT/.test(data), 'should be PUT');
+   });
   },
   testRequestShouldBeAbleToPOST: function(host, test) {
-    rest.post(host, function(data) {
-      test.assertTrue(/^POST/.test(data), 'should be POST');
-    });
+   rest.post(host).addListener('complete', function(data) {
+     test.assertTrue(/^POST/.test(data), 'should be POST');
+   });
   },
   testRequestShouldBeAbleToDELETE: function(host, test) {
-    rest.del(host, function(data) {
-      test.assertTrue(/^DELETE/.test(data), 'should be DELETE');
-    });
+   rest.del(host).addListener('complete', function(data) {
+     test.assertTrue(/^DELETE/.test(data), 'should be DELETE');
+   });
   },
   testRequestShouldSerializeQuery: function(host, test) {
-    rest.get(host, {
-      query: { q: 'balls' },
-      complete: function(data) {
-        test.assertTrue(/^GET \/\?q\=balls/.test(data), 'should hit /?q=balls');
-      }
+    rest.get(host, { query: { q: 'balls' } }).addListener('complete', function(data) {
+      test.assertTrue(/^GET \/\?q\=balls/.test(data), 'should hit /?q=balls');
     });
   },
   testRequestShouldPostBody: function(host, test) {
-    rest.post(host, {
-      data: "balls",
-      complete: function(data) {
-        test.assertTrue(/\r\n\r\nballs/.test(data), 'should have balls in the body')
-      }
+    rest.post(host, { data: "balls" }).addListener('complete', function(data) {
+      test.assertTrue(/\r\n\r\nballs/.test(data), 'should have balls in the body')
     });
   },
   testRequestShouldSerializePostBody: function(host, test) {
-    rest.post(host, {
-      data: { q: 'balls' },
-      complete: function(data) {
-        test.assertTrue(/content-type\: application\/x-www-form-urlencoded/.test(data), 'should set content-type');
-        test.assertTrue(/content-length\: 7/.test(data), 'should set content-length');
-        test.assertTrue(/\r\n\r\nq=balls/.test(data), 'should have balls in the body')
-      }
+    rest.post(host, { data: { q: 'balls' } }).addListener('complete', function(data) {
+      test.assertTrue(/content-type\: application\/x-www-form-urlencoded/.test(data), 
+                      'should set content-type');
+      test.assertTrue(/content-length\: 7/.test(data), 'should set content-length');
+      test.assertTrue(/\r\n\r\nq=balls/.test(data), 'should have balls in the body')
     });
   },
   testRequestShouldSendHeaders: function(host, test) {
     rest.get(host, {
-      headers: { 'Content-Type': 'application/json' },
-      complete: function(data) {
-        test.assertTrue(/content\-type\: application\/json/.test(data), 'should content type header')
-      }
+      headers: { 'Content-Type': 'application/json' }
+    }).addListener('complete', function(data) {
+      test.assertTrue(/content\-type\: application\/json/.test(data), 'should content type header')
     });
   },
   testRequestShouldSendBasicAuth: function(host, test) {
-    rest.post(host, {
-      username: 'danwrong',
-      password: 'flange',
-      complete: function(data) {
-        test.assertTrue(/authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/.test(data), 'should have auth header')
-      }
+    rest.post(host, { username: 'danwrong', password: 'flange' }).addListener('complete', function(data) {
+      test.assertTrue(/authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/.test(data), 'should have auth header')
     });
   },
   testRequestShouldSendBasicAuthIfInURL: function(host, test) {
     var port = host.match(/\:(\d+)/)[1];
     host = "http://danwrong:flange@localhost:" + port;
-    rest.post(host, {
-      complete: function(data) {
-        test.assertTrue(/authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/.test(data), 'should have auth header')
-      }
+    rest.post(host).addListener('complete', function(data) {
+      test.assertTrue(/authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/.test(data), 'should have auth header')
     });
   },
 });
-
+ 
 helper.testCase('Multipart Tests', helper.echoServer, {
-  testMultipartRequestWithSimpleVars: function(host, test) {
-    rest.post(host, {
-      data: { a: 1, b: 'thing' },
-      multipart: true,
-      complete: function(data) {
-        test.assertTrue(/content-type\: multipart\/form-data/.test(data), 'should set content type')
-        test.assertTrue(/name="a"(\s)+1/.test(data), 'should send a=1');
-        test.assertTrue(/name="b"(\s)+thing/.test(data), 'should send b=thing');
-      }
-    })
-  }
+ testMultipartRequestWithSimpleVars: function(host, test) {
+   rest.post(host, {
+     data: { a: 1, b: 'thing' },
+     multipart: true
+   }).addListener('complete', function(data) {
+     test.assertTrue(/content-type\: multipart\/form-data/.test(data), 'should set content type')
+     test.assertTrue(/name="a"(\s)+1/.test(data), 'should send a=1');
+     test.assertTrue(/name="b"(\s)+thing/.test(data), 'should send b=thing');
+   });
+ }
 });
 
 
 helper.testCase("Deserialization Tests", helper.dataServer, {
   testAutoSerializerShouldParseJSON: function(host, test) {
     rest.get(host, {
-      headers: { 'Accepts': 'application/json' },
-      complete: function(data) {
-        test.assertEquals(true, data.ok, "returned " + sys.inspect(data));
-      }
+      headers: { 'Accepts': 'application/json' }
+    }).addListener('complete', function(data) {
+      test.assertEquals(true, data.ok, "returned " + sys.inspect(data));
     });
   },
   testAutoSerializerShouldParseXML: function(host, test) {
     rest.get(host, {
-      headers: { 'Accepts': 'application/xml' },
-      complete: function(data) {
-        test.assertEquals("true", data.document.ok, "returned " + sys.inspect(data));
-      }
+      headers: { 'Accepts': 'application/xml' }
+    }).addListener('complete', function(data) {
+      test.assertEquals("true", data.document.ok, "returned " + sys.inspect(data));
     });
   },
   testAutoSerializerShouldParseYAML: function(host, test) {
     rest.get(host, {
-      headers: { 'Accepts': 'application/yaml' },
-      complete: function(data) {
-        test.assertEquals(true, data.ok, "returned " + sys.inspect(data));
-      }
+      headers: { 'Accepts': 'application/yaml' }
+    }).addListener('complete', function(data) {
+      test.assertEquals(true, data.ok, "returned " + sys.inspect(data));
     });
   }
 });
 
 helper.testCase('Redirect Tests', helper.redirectServer, {
   testShouldAutomaticallyFollowRedirects: function(host, test) {
-    rest.get(host, function(data) {
+    rest.get(host).addListener('complete', function(data) {
       test.assertEquals('Hell Yeah!', data, "returned " + sys.inspect(data));
     });
   }
