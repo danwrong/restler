@@ -112,7 +112,7 @@ Example usage
     });
     
     // multipart request sending a file and using https
-    rest.post(https://twaud.io/api/v1/upload.json, {
+    rest.post('https://twaud.io/api/v1/upload.json', {
       multipart: true,
       data: {
         username: 'danwrong',
