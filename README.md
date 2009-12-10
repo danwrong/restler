@@ -76,6 +76,7 @@ All of these attempt to turn the response into a JavaScript object.
 * _password_ Basic auth password
 * _multipart_ If set the data passed will be formated as multipart/form-encoded.  See multipart example below.
 * _client_ A http.Client instance if you want to reuse or implement some kind of connection pooling.
+* _followRedirects_
 
 
 SSL Support
