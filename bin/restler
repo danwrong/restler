@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+require.paths.push(process.cwd());
+
+var sys  = require('sys'),
+    rest = require('../lib/restler'),
+    repl = require('repl');
+  
+repl.start();
+    
+process.mixin(repl.scope, {
+  sys: sys,
+  rest: rest
+})
