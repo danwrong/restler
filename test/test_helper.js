@@ -34,7 +34,7 @@ exports.echoServer = function() {
 }
 
 exports.dataServer = function() {
-  var json = "{ ok: true }";
+  var json = "{ \"ok\": true }";
   var xml  = "<document><ok>true</ok></document>";
   var yaml = "ok: true";
   
