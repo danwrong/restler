@@ -4,7 +4,7 @@ var test = require('mjsunit'),
 
 exports.echoServer = function() {
   var server = http.createServer(function(request, response) {
-    var echo = [request.method, request.uri.full, "HTTP/" + 
+    var echo = [request.method, request.url, "HTTP/" +
                 request.httpVersion].join(' ') + "\r\n";
     for (var header in request.headers) {
       echo += header + ": " + request.headers[header] + "\r\n";
@@ -66,7 +66,7 @@ exports.redirectServer = function() {
   var port = exports.port++;
   
   var server = http.createServer(function(request, response) {
-    if (request.uri.full == '/redirected') {
+    if (request.url == '/redirected') {
       response.sendHeader(200, { 'Content-Type': 'text/plain' });
       response.sendBody('Hell Yeah!');
       response.finish();
