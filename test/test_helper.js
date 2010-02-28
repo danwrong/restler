@@ -10,10 +10,10 @@ exports.echoServer = function() {
       echo += header + ": " + request.headers[header] + "\r\n";
     }
     echo += '\r\n';
-    request.addListener('body', function(chunk) {
+    request.addListener('data', function(chunk) {
       echo += chunk;
     });
-    request.addListener('complete', function() {
+    request.addListener('end', function() {
       
       var requestedCode = request.headers['x-give-me-status'];
       
@@ -22,8 +22,8 @@ exports.echoServer = function() {
         'Content-Length': echo.length
       });
     
-      response.sendBody(echo);
-      response.finish();
+      response.write(echo);
+      response.close();
       server.close();
     });
   });
@@ -42,18 +42,18 @@ exports.dataServer = function() {
     response.sendHeader(200, { 'Content-Type': request.headers['accepts'] });
     
     if (request.headers['accepts'] == 'application/json') {
-      response.sendBody(json);
+      response.write(json);
     }
     
     if (request.headers['accepts'] == 'application/xml') {
-      response.sendBody(xml);
+      response.write(xml);
     }
     
     if (request.headers['accepts'] == 'application/yaml') {
-      response.sendBody(yaml);
+      response.write(yaml);
     }
     
-    response.finish();
+    response.close();
     server.close();
   });
   
@@ -68,13 +68,13 @@ exports.redirectServer = function() {
   var server = http.createServer(function(request, response) {
     if (request.url == '/redirected') {
       response.sendHeader(200, { 'Content-Type': 'text/plain' });
-      response.sendBody('Hell Yeah!');
-      response.finish();
+      response.write('Hell Yeah!');
+      response.close();
       server.close();
     } else {
       response.sendHeader(301, { 'Location': 'http://localhost:' + port + '/redirected' });
-      response.sendBody('Redirecting...');
-      response.finish();
+      response.write('Redirecting...');
+      response.close();
     }
     
   });
@@ -136,7 +136,7 @@ exports.testCase = function(caseName, serverFunc, tests) {
   
   process.addListener('exit', function() {
     var passFail = (testCount == passes) ? ' \033[0;32mGOOD!\033[1;37m' : ' \033[0;31mBAD!\033[1;37m';
-    sys.puts(caseName + " - Assertions: " + testCount + " Passed: " + passes + " Failed: " + fails + passFail);
+    sys.puts(caseName + " - Assertions: " + testCount + " Passed: " + passes + " Failed: " + fails);
   });
 }
 
