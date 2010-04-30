@@ -7,8 +7,12 @@ var sys  = require('sys'),
     repl = require('repl');
   
 repl.start();
-    
-process.mixin(repl.scope, {
+
+var exportMethods = {
   sys: sys,
   rest: rest
+}
+
+Object.keys(exportMethods).forEach(function(exportMethod) {
+  repl.scope[exportMethod] = exportMethods[exportMethod]
 })
