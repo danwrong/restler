@@ -17,13 +17,13 @@ exports.echoServer = function() {
       
       var requestedCode = request.headers['x-give-me-status'];
       
-      response.sendHeader(requestedCode || 200, {
+      response.writeHead(requestedCode || 200, {
         'Content-Type': 'text/plain',
         'Content-Length': echo.length
       });
     
       response.write(echo);
-      response.close();
+      response.end();
       server.close();
     });
   });
@@ -39,7 +39,7 @@ exports.dataServer = function() {
   var yaml = "ok: true";
   
   var server = http.createServer(function(request, response) {
-    response.sendHeader(200, { 'Content-Type': request.headers['accepts'] });
+    response.writeHead(200, { 'Content-Type': request.headers['accepts'] });
     
     if (request.headers['accepts'] == 'application/json') {
       response.write(json);
@@ -53,7 +53,7 @@ exports.dataServer = function() {
       response.write(yaml);
     }
     
-    response.close();
+    response.end();
     server.close();
   });
   
@@ -67,14 +67,14 @@ exports.redirectServer = function() {
   
   var server = http.createServer(function(request, response) {
     if (request.url == '/redirected') {
-      response.sendHeader(200, { 'Content-Type': 'text/plain' });
+      response.writeHead(200, { 'Content-Type': 'text/plain' });
       response.write('Hell Yeah!');
-      response.close();
+      response.end();
       server.close();
     } else {
-      response.sendHeader(301, { 'Location': 'http://localhost:' + port + '/redirected' });
+      response.writeHead(301, { 'Location': 'http://localhost:' + port + '/redirected' });
       response.write('Redirecting...');
-      response.close();
+      response.end();
     }
     
   });
