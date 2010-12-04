@@ -1,0 +1,21 @@
+{
+    "name": "restler",
+    "version": "1.0.0",
+    "directories": {
+        "lib": "./lib"
+    },
+    "main": "./lib/restler",
+    "engines": {
+        "node" : ">=0.1.93"
+    },
+    "dependencies": {
+    },
+    "description": "An HTTP client library for node.js. Hides most of the complexity of creating and using http.Client.",
+    "author": "Dan Webb <dan@danwebb.net>",
+    "homepage": "https://github.com/danwrong/restler",
+    "repository" :
+    {
+        "type" : "git",
+        "url" : "git://github.com/danwrong/restler.git"
+    }
+}
