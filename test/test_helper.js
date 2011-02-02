@@ -1,4 +1,4 @@
-var test = require('mjsunit'),
+var test = require('assert'),
     http  = require("http"),
     sys  = require('sys');
 

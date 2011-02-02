@@ -1,8 +1,8 @@
-    multipartform = require('../lib/multipartform'),
+var multipartform = require('../lib/multipartform'),
     multipart = require('multipart'),
-    sys  = require('sys');
-    fs = require('fs')
-http = require("http");
+    sys  = require('sys'),
+    fs = require('fs'),
+    http = require("http");
     
 
 http.createServer(function (req, res) {
