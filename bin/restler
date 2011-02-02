@@ -6,7 +6,7 @@ var sys  = require('sys'),
     rest = require('../lib/restler'),
     repl = require('repl');
   
-repl.start();
+var replServer = repl.start();
 
 var exportMethods = {
   sys: sys,
@@ -14,5 +14,5 @@ var exportMethods = {
 }
 
 Object.keys(exportMethods).forEach(function(exportMethod) {
-  repl.scope[exportMethod] = exportMethods[exportMethod]
-})
+  replServer.context[exportMethod] = exportMethods[exportMethod];
+});
