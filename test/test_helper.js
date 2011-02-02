@@ -10,8 +10,9 @@ exports.echoServer = function() {
       echo += header + ": " + request.headers[header] + "\r\n";
     }
     echo += '\r\n';
+    
     request.addListener('data', function(chunk) {
-      echo += chunk;
+      echo += chunk.toString('binary');
     });
     request.addListener('end', function() {
       
