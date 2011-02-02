@@ -39,7 +39,7 @@ exports.dataServer = function() {
   var yaml = "ok: true";
   
   var server = http.createServer(function(request, response) {
-    response.writeHead(200, { 'Content-Type': request.headers['accepts'] });
+    response.writeHead(200, { 'Content-Type': request.headers['accepts'], 'test': 'thing' });
     
     if (request.headers['accepts'] == 'application/json') {
       response.write(json);

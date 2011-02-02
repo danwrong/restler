@@ -123,20 +123,20 @@ helper.testCase("Deserialization Tests", helper.dataServer, {
       test.equal(true, data.ok, "returned " + sys.inspect(data));
     });
   },
-  // testAutoSerializerShouldParseXML: function(host, test) {
-  //   rest.get(host, {
-  //     headers: { 'Accepts': 'application/xml' }
-  //   }).on('complete', function(data) {
-  //     test.equal("true", data.document.ok, "returned " + sys.inspect(data));
-  //   });
-  // },
-  // testAutoSerializerShouldParseYAML: function(host, test) {
-  //   rest.get(host, {
-  //     headers: { 'Accepts': 'application/yaml' }
-  //   }).on('complete', function(data) {
-  //     test.equal(true, data.ok, "returned " + sys.inspect(data));
-  //   });
-  // }
+  testAutoSerializerShouldParseXML: function(host, test) {
+    rest.get(host, {
+      headers: { 'Accepts': 'application/xml' }
+    }).on('complete', function(data) {
+      test.equal("true", data.ok, "returned " + sys.inspect(data));
+    });
+  },
+  testAutoSerializerShouldParseYAML: function(host, test) {
+    rest.get(host, {
+      headers: { 'Accepts': 'application/yaml' }
+    }).on('complete', function(data) {
+      test.equal(true, data.ok, "returned " + sys.inspect(data));
+    });
+  }
 });
 
 helper.testCase('Redirect Tests', helper.redirectServer, {
