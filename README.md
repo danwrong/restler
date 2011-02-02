@@ -85,21 +85,21 @@ Example usage
     var sys = require('sys'),
         rest = require('./restler');
 
-    rest.get('http://google.com').addListener('complete', function(data) {
+    rest.get('http://google.com').on('complete', function(data) {
       sys.puts(data);
     });
 
-    rest.get('http://twaud.io/api/v1/users/danwrong.json').addListener('complete', function(data) {
+    rest.get('http://twaud.io/api/v1/users/danwrong.json').on('complete', function(data) {
       sys.puts(data[0].message); // auto convert to object
     });
     
-    rest.get('http://twaud.io/api/v1/users/danwrong.xml').addListener('complete', function(data) {
+    rest.get('http://twaud.io/api/v1/users/danwrong.xml').on('complete', function(data) {
       sys.puts(data[0].sounds[0].sound[0].message); // auto convert to object
     });
     
     rest.post('http://user:pass@service.com/action', {
       data: { id: 334 },
-    }).addListener('complete', function(data, response) {
+    }).on('complete', function(data, response) {
       if (response.statusCode == 201) {
         // you can get at the raw response like this...
       }
@@ -114,7 +114,7 @@ Example usage
         'sound[message]': 'hello from restler!',
         'sound[file]': rest.file('doug-e-fresh_the-show.mp3', 'audio/mpeg')
       }
-    }).addListener('complete', function(data) {
+    }).on('complete', function(data) {
       sys.puts(data.audio_url);
     });
     
@@ -131,7 +131,7 @@ Example usage
     });
     
     var client = new Twitter('danwrong', 'password');
-    client.update('Tweeting using a Restler service thingy').addListener('complete', function(data) {
+    client.update('Tweeting using a Restler service thingy').on('complete', function(data) {
       sys.p(data);
     });
 
