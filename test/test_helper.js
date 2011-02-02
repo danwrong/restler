@@ -1,6 +1,6 @@
-var test = require('assert'),
-    http  = require("http"),
-    sys  = require('sys');
+var http  = require("http"),
+    sys   = require('sys'),
+    test  = require('assert');
 
 exports.echoServer = function() {
   var server = http.createServer(function(request, response) {
@@ -92,15 +92,16 @@ exports.testCase = function(caseName, serverFunc, tests) {
     var assertions = {};
     
     [
-      'assertEquals',
-      'assertArrayEquals',
-      'assertTrue',
-      'assertFalse',
-      'assertNaN',
-      'assertThrows',
-      'AssertInstanceOf',
-      'assertDoesNotThrow',
-      'assertUnreachable'
+      'ok',
+      'equal',
+      'notEqual',
+      'deepEqual',
+      'notDeepEqual',
+      'strictEqual',
+      'notStrictEqual',
+      'throws',
+      'doesNotThrow',
+      'ifError'
     ].forEach(function(assert) {
       assertions[assert] = function() {
         testCount++;
@@ -135,8 +136,8 @@ exports.testCase = function(caseName, serverFunc, tests) {
   }
   
   process.addListener('exit', function() {
-    var passFail = (testCount == passes) ? ' \033[0;32mGOOD!\033[1;37m' : ' \033[0;31mBAD!\033[1;37m';
-    sys.puts(caseName + " - Assertions: " + testCount + " Passed: " + passes + " Failed: " + fails);
+    var passFail = (testCount == passes) ? ' \033[0;32mPASS\033[1;37m' : ' \033[0;31mFAIL\033[1;37m';
+    sys.puts(caseName + " - Assertions: " + testCount + " Passed: " + passes + " Failed: " + fails + passFail);
   });
 }
 
