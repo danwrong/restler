@@ -79,14 +79,6 @@ All of these attempt to turn the response into a JavaScript object.
 * _followRedirects_ Does what it says on the tin.
 
 
-SSL Support
------------
-
-TLS support for HTTP requests has been added to node.js but is not in 0.1.20.  If you need
-SSL support get the latest version of node.js from github, install gnutls and then compile it.
-If you've done this the Restler will send SSL requests if you specify a https protocol.
-
-
 Example usage
 -------------
 
