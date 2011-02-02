@@ -1,24 +1,24 @@
-Restler
-=======
+Restler 2.0
+===========
 
-(C) Dan Webb (dan@danwebb.net/@danwrong) 2009, Licensed under the MIT-LICENSE
+(C) Dan Webb (dan@danwebb.net/@danwrong) 2011, Licensed under the MIT-LICENSE
 
-An HTTP client library for node.js.  Hides most of the complexity of creating and using http.Client. Very early days yet.
-
+An HTTP client library for node.js (0.3 and up).  Hides most of the complexity of creating and using http.Client. Very early days yet.
 
 
 Features
 --------
 
-* Easy interface for basic operations via http.Client
+* Easy interface for common operations via http.request
 * Automatic serialization of post data
 * Automatic serialization of query string data
-* Automatic deserialization of XML, JSON and YAML responses to JavaScript objects
+* Automatic deserialization of XML, JSON and YAML responses to JavaScript objects (if you have js-yaml and/or xml2js in the require path)
 * Provide your own deserialization functions for other datatypes
 * Automatic following of redirects
 * Send files with multipart requests
 * Transparently handle SSL (just specify https in the URL)
 * Deals with basic auth for you, just provide username and password options
+* Simple service wrapper that allows you to easily put together REST API libraries
     
     
 API
@@ -147,17 +147,9 @@ Example usage
 Running the tests
 -----------------
 
-    node test/restler.js
-    
+    node test/restler.js 
     
 TODO
 ----
-* replace xml2json with own implementation
+* Deal with no utf-8 response bodies
 * What do you need? Let me know or fork.
-
-
-Acknowledgements
-----------------
-
-Restler uses base64, querystring and uri from Narwhal, yaml by TJ Holowaychuk and xml2json by Thomas Frank.  See each of the files
-in the vendor directory for their licences.
