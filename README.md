@@ -62,7 +62,7 @@ If the content type isn't recognised it just returns the data untouched.
 
 #### parsers.json, parsers.xml, parsers.yaml
 
-All of these attempt to turn the response into a JavaScript object.
+All of these attempt to turn the response into a JavaScript object. In order to use the YAML and XML parsers you must have yaml and/or xml2js installed.
 
 ### options hash
 
