@@ -16,3 +16,8 @@ var exportMethods = {
 Object.keys(exportMethods).forEach(function(exportMethod) {
   replServer.context[exportMethod] = exportMethods[exportMethod];
 });
+
+rest.get('http://twaud.io/api/v1/7.json').on('complete', function(data, response) {
+  console.log(response.headers);
+  replServer.context.data = data;
+});
