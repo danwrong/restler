@@ -108,9 +108,9 @@ Example usage
     // multipart request sending a file and using https
     rest.post('https://twaud.io/api/v1/upload.json', {
       multipart: true,
+      username: 'danwrong',
+      password: 'wouldntyouliketoknow',
       data: {
-        username: 'danwrong',
-        password: 'wouldntyouliketoknow',
         'sound[message]': 'hello from restler!',
         'sound[file]': rest.file('doug-e-fresh_the-show.mp3', 'audio/mpeg')
       }
