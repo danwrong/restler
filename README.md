@@ -1,4 +1,4 @@
-Restler 2.0
+Restler 0.2.0
 ===========
 
 (C) Dan Webb (dan@danwebb.net/@danwrong) 2011, Licensed under the MIT-LICENSE
