@@ -3,5 +3,8 @@
     "version": "0.2.0",
     "description": "An HTTP client library for node.js",
     "contributors": [{ name: "Dan Webb", email: "dan@danwebb.net" }],
-    "homepage": "https://github.com/danwrong/restler"
+    "homepage": "https://github.com/danwrong/restler",
+    "directories" : { "lib" : "./lib" },
+    "main" : "./lib/restler",
+    "engines": { "node": ">= 0.3.7" }
 }
