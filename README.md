@@ -135,6 +135,13 @@ Example usage
       sys.p(data);
     });
 
+    // the JSON post
+    rest.post('http://example.com/action', {
+      data: JSON.stringify({ id: 334 }),
+    }).on('complete', function(data, response) {
+      // you can get at the raw response like this...
+    });
+
     
 Running the tests
 -----------------

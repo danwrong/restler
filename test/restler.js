@@ -146,3 +146,23 @@ helper.testCase('Redirect Tests', helper.redirectServer, {
     });
   }
 });
+
+helper.testCase('Content-Length Tests', helper.contentLengthServer, {
+  testRequestHeaderIncludesContentLengthWithJSONData: function(host, test){
+    var jsonString = JSON.stringify({ greeting: 'hello world' });
+    rest.post(host, {
+      data: jsonString
+    }).on('complete', function(data){
+      test.equal(26, data, 'should set content-length');
+    });
+  },
+  testJSONMultibyteContentLength: function (host, test){
+    var multibyteData = JSON.stringify({ greeting: 'こんにちは世界' });
+    rest.post(host, {
+      data: multibyteData
+    }).on('complete', function(data) {
+      test.notEqual(22, data, 'should unicode string length');
+      test.equal(36, data, 'should byte-size content-length');
+    });
+  }
+});
