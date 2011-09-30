@@ -68,7 +68,9 @@ All of these attempt to turn the response into a JavaScript object. In order to 
 
 * _method_ Request method, can be get, post, put, del
 * _query_ Query string variables as a javascript object, will override the querystring in the URL
-* _data_ The data to be added to the body of the request.  Can be a string or any object
+* _data_ The data to be added to the body of the request.  Can be a string or any object. 
+Note that if you want your request body to be JSON with the Content-Type `application/json`, you need to 
+JSON.stringify your object first. Otherwise, it will be sent as `application/x-www-form-urlencoded` and encoded accordingly.
 * _parser_ A function that will be called on the returned data.  try parsers.auto, parsers.json etc
 * _encoding_ The encoding of the request body.  defaults to utf8
 * _headers_ a hash of HTTP headers to be sent
