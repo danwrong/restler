@@ -1,6 +1,6 @@
 var helper = require('./test_helper'),
     rest   = require('../lib/restler'),
-    sys    = require('sys');
+    sys    = require('util');
     
 helper.testCase("Basic Tests", helper.echoServer, {
   testRequestShouldTakePath: function(host, test) {

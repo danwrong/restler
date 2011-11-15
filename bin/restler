@@ -2,7 +2,7 @@
 
 require.paths.push(process.cwd());
 
-var sys  = require('sys'),
+var sys  = require('util'),
     rest = require('../lib/restler'),
     repl = require('repl');
   
