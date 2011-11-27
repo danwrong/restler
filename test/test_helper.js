@@ -84,6 +84,25 @@ exports.redirectServer = function() {
   return ["http://localhost:" + port, server];
 }
 
+exports.contentLengthServer = function (){
+  var port = exports.port++;
+
+  var server = http.createServer(function(request, response){
+    response.writeHead(200, { 'Content-Type': 'text/plain' });
+    if('content-length' in request.headers){
+      response.write(request.headers['content-length']);
+    } else {
+      response.write('content-length isnot set');
+    }
+
+    response.end();
+    server.close();
+  });
+
+  server.listen(port, 'localhost');
+  return ['http://localhost:' + port, server];
+};
+
 exports.port = 7000;
 
 exports.testCase = function(caseName, serverFunc, tests) {
