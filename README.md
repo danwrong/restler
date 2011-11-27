@@ -82,7 +82,7 @@ All of these attempt to turn the response into a JavaScript object. In order to 
 Example usage
 -------------
 
-    var sys = require('sys'),
+    var sys = require('util'),
         rest = require('./restler');
 
     rest.get('http://google.com').on('complete', function(data) {

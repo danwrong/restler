@@ -1,5 +1,5 @@
 var http  = require("http"),
-    sys   = require('sys'),
+    sys   = require('util'),
     test  = require('assert');
 
 exports.echoServer = function() {
