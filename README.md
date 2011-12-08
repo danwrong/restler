@@ -5,6 +5,8 @@ Restler 0.2.2
 
 An HTTP client library for node.js (0.3 and up).  Hides most of the complexity of creating and using http.Client. Very early days yet.
 
+See [Version History](https://github.com/danwrong/restler/wiki/Version-History) for changes
+
 
 Features
 --------
