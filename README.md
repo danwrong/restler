@@ -7,7 +7,7 @@ An HTTP client library for node.js (0.3 and up).  Hides most of the complexity o
 
 **Release 0.3.x** will be dedicated to modifying how errors are handled and emitted. Currently errors are being fired as an on 'error' event but as [@ctavan](https://github.com/ctavan) pointed out on [issue #36](https://github.com/danwrong/restler/pull/36) a better approach (and more commonly in vogue now) would be to pass the error obj to the callback.
 
-Ths change will inevitably affect those using older > 0.2.x versions of restler. Those not ready to upgrade yet are encouraged to stay on the 0.2.x version.
+Ths change will inevitably affect those using older < 0.2.x versions of restler. Those not ready to upgrade yet are encouraged to stay on the 0.2.x version.
 
 See [Version History](https://github.com/danwrong/restler/wiki/Version-History) for changes
 
