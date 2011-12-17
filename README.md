@@ -21,8 +21,9 @@ Features
 * Transparently handle SSL (just specify https in the URL)
 * Deals with basic auth for you, just provide username and password options
 * Simple service wrapper that allows you to easily put together REST API libraries
-    
-    
+* Transparently handle content-encoded responses (gzip, deflate)
+
+
 API
 ---
 
@@ -75,6 +76,7 @@ Note that if you want your request body to be JSON with the Content-Type `applic
 JSON.stringify your object first. Otherwise, it will be sent as `application/x-www-form-urlencoded` and encoded accordingly.
 * _parser_ A function that will be called on the returned data.  try parsers.auto, parsers.json etc
 * _encoding_ The encoding of the request body.  defaults to utf8
+* _decoding_ The encoding of the response body. For a list of supported values see [Buffers](http://nodejs.org/docs/latest/api/buffers.html#buffers). Additionally accepts `"buffer"` - returns response as `Buffer`. Defaults to `utf8`.
 * _headers_ a hash of HTTP headers to be sent
 * _username_ Basic auth username
 * _password_ Basic auth password
