@@ -1,6 +1,6 @@
 {
     "name": "restler",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "An HTTP client library for node.js",
     "contributors": [{ "name": "Dan Webb", "email": "dan@danwebb.net" }],
     "homepage": "https://github.com/danwrong/restler",
