@@ -31,12 +31,21 @@ API
 
 Basic method to make a request of any type. The function returns a RestRequest object that emits events:
 
+#### events
+
 * `complete: function(data, response)` - emitted when the request has finished whether it was successful or not. Gets passed the response data and the response object as arguments. If some error has occurred, `data` is always instance of `Error`.
 * `success: function(data, response)` - emitted when the request was successful. Gets passed the response data and the response object as arguments.
 * `fail`: function(data, response)` - emitted when the request was successful, but 4xx status code returned. Gets passed the response data and the response object as arguments.
 * `error`: function(err, response)` - emitted when some errors have occurred (eg. connection aborted, parse, encoding, decoding failed or some other unhandled errors). Gets passed the `Error` object and the response object (when available) as arguments.
+* `abort`: function()` - emitted when `request.abort()` is called.
 * `2XX`, `3XX`, `4XX`, `5XX: function(data, response)` - emitted for all requests with response codes in the range (eg. `2XX` emitted for 200, 201, 203).
 * <code><i>actual response code</i>: function(data, response)<code> - emitted for every single response code (eg. 404, 201, etc).
+
+#### members
+
+* `abort()` Cancels request. `abort` event is emitted. `aborted` property is set to `true`. only `complete` and `error` event should.
+* `aborted` Determines if request was aborted.
+
 
 ### get(url, options)
 

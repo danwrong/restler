@@ -3,6 +3,7 @@ var rest = require('../lib/restler');
 var http = require('http');
 var sys  = require('util');
 var zlib = require('zlib');
+var p = sys.inspect;
 
 var port = 9000;
 var hostname = 'localhost';
@@ -285,35 +286,35 @@ module.exports['Deserialization'] = {
 
   'Should parse JSON': function(test) {
     rest.get(host + '/json').on('complete', function(data) {
-      test.equal(data.ok, true, 'returned: ' + sys.inspect(data));
+      test.equal(data.ok, true, 'returned: ' + p(data));
       test.done();
     });
   },
 
   'Should parse XML': function(test) {
     rest.get(host + '/xml').on('complete', function(data, response) {
-      test.equal(data.ok, 'true', 'returned: ' + response.raw + ' || ' + sys.inspect(data));
+      test.equal(data.ok, 'true', 'returned: ' + response.raw + ' || ' + p(data));
       test.done();
     });
   },
 
   'Should parse YAML': function(test) {
     rest.get(host + '/yaml').on('complete', function(data) {
-      test.equal(data.ok, true, 'returned: ' + sys.inspect(data));
+      test.equal(data.ok, true, 'returned: ' + p(data));
       test.done();
     });
   },
 
   'Should gunzip': function(test) {
     rest.get(host + '/gzip').on('complete', function(data) {
-      test.re(data, /^(compressed data){10}$/, 'returned: ' + sys.inspect(data));
+      test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
       test.done();
     })
   },
 
   'Should inflate': function(test) {
     rest.get(host + '/deflate').on('complete', function(data) {
-      test.re(data, /^(compressed data){10}$/, 'returned: ' + sys.inspect(data));
+      test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
       test.done();
     })
   },
@@ -324,9 +325,9 @@ module.exports['Deserialization'] = {
         with (data) {
           var result = what + (is + the + answer + to + life + the + universe + and + everything).length;
         }
-        test.equal(result, 42, 'returned: ' + sys.inspect(data));
+        test.equal(result, 42, 'returned: ' + p(data));
       } catch (err) {
-        test.ok(false, 'returned: ' + sys.inspect(data));
+        test.ok(false, 'returned: ' + p(data));
       }
       test.done();
     })
@@ -335,23 +336,23 @@ module.exports['Deserialization'] = {
   'Should decode as buffer': function(test) {
     rest.get(host + '/binary', { decoding: 'buffer' }).on('complete', function(data) {
       test.ok(data instanceof Buffer, 'should be buffer');
-      test.equal(data.toString('base64'), 'CR5Ah8g=', 'returned: ' + sys.inspect(data));
+      test.equal(data.toString('base64'), 'CR5Ah8g=', 'returned: ' + p(data));
       test.done();
     })
   },
 
   'Should decode as binary': function(test) {
     rest.get(host + '/binary', { decoding: 'binary' }).on('complete', function(data) {
-      test.ok(typeof data == 'string', 'should be string: ' + sys.inspect(data));
-      test.equal(data, '\t\u001e@È', 'returned: ' + sys.inspect(data));
+      test.ok(typeof data == 'string', 'should be string: ' + p(data));
+      test.equal(data, '\t\u001e@È', 'returned: ' + p(data));
       test.done();
     })
   },
 
   'Should decode as base64': function(test) {
     rest.get(host + '/binary', { decoding: 'base64' }).on('complete', function(data) {
-      test.ok(typeof data == 'string', 'should be string: ' + sys.inspect(data));
-      test.equal(data, 'CR5Ah8g=', 'returned: ' + sys.inspect(data));
+      test.ok(typeof data == 'string', 'should be string: ' + p(data));
+      test.equal(data, 'CR5Ah8g=', 'returned: ' + p(data));
       test.done();
     })
   },
@@ -364,7 +365,7 @@ module.exports['Deserialization'] = {
       },
       data: JSON.stringify(obj)
     }).on('complete', function(data) {
-      test.equal(obj.secret, data.secret, 'returned: ' + sys.inspect(data));
+      test.equal(obj.secret, data.secret, 'returned: ' + p(data));
       test.done();
     })
   },
@@ -372,7 +373,7 @@ module.exports['Deserialization'] = {
   'Should post and parse JSON via shortcut method': function(test) {
     var obj = { secret : 'very secret string' };
     rest.postJson(host + '/push-json', obj).on('complete', function(data) {
-      test.equal(obj.secret, data.secret, 'returned: ' + sys.inspect(data));
+      test.equal(obj.secret, data.secret, 'returned: ' + p(data));
       test.done();
     });
   },
@@ -386,11 +387,29 @@ module.exports['Deserialization'] = {
     };
     rest.get(host + '/custom-mime').on('complete', function(data) {
       test.expect(3);
-      test.ok(Array.isArray(data), 'should be array, returned: ' + sys.inspect(data));
-      test.equal(data.join(''), '666', 'should be [6,6,6], returned: ' + sys.inspect(data));
-      test.equal(data.__parsedBy__, 'github', 'should use vendor-specific parser, returned: ' + sys.inspect(data.__parsedBy__));
+      test.ok(Array.isArray(data), 'should be array, returned: ' + p(data));
+      test.equal(data.join(''), '666', 'should be [6,6,6], returned: ' + p(data));
+      test.equal(data.__parsedBy__, 'github', 'should use vendor-specific parser, returned: ' + p(data.__parsedBy__));
       test.done();
     });
+  },
+
+  'Should correctly abort request': function(test) {
+    test.expect(5);
+    rest.get(host + '/json').on('complete', function(data) {
+      test.ok(data instanceof Error, 'should be error, got: ' + p(data));
+      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
+      test.done();
+    }).on('error', function(data) {
+      test.ok(data instanceof Error, 'should be error, got: ' + p(data));
+      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
+    }).on('abort', function() {
+      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
+    }).on('success', function() {
+      test.ok(false, 'should not have got here');
+    }).on('fail', function() {
+      test.ok(false, 'should not have got here');
+    }).abort();
   }
 
 };
@@ -422,7 +441,7 @@ module.exports['Redirect'] = {
 
   'Should follow redirects': function(test) {
     rest.get(host).on('complete', function(data) {
-      test.equal(data, 'redirected', 'returned: ' + sys.inspect(data));
+      test.equal(data, 'redirected', 'returned: ' + p(data));
       test.done();
     });
   },
@@ -431,7 +450,7 @@ module.exports['Redirect'] = {
     rest.get(host, {
       headers: { 'x-redirects': '5' }
     }).on('complete', function(data) {
-      test.equal(data, '5', 'returned: ' + sys.inspect(data));
+      test.equal(data, '5', 'returned: ' + p(data));
       test.done();
     });
   }
