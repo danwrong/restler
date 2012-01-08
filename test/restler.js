@@ -261,10 +261,16 @@ function dataResponse(request, response) {
       });
       request.addListener('end', function() {
         response.writeHead(200, {
-          'content-type': 'application/json',
+          'content-type': 'application/json'
         });
         response.end(JSON.stringify(JSON.parse(echo)));
       });
+      break;
+    case '/custom-mime':
+      response.writeHead(200, {
+        'content-type': 'application/vnd.github.beta.raw+json; charset=UTF-8'
+      });
+      response.end(JSON.stringify([6,6,6]));
       break;
     default:
       response.writeHead(404);
@@ -367,6 +373,22 @@ module.exports['Deserialization'] = {
     var obj = { secret : 'very secret string' };
     rest.postJson(host + '/push-json', obj).on('complete', function(data) {
       test.equal(obj.secret, data.secret, 'returned: ' + sys.inspect(data));
+      test.done();
+    });
+  },
+
+  'Should understand custom mime-type': function(test) {
+    rest.parsers.auto.matchers['application/vnd.github+json'] = function(data, callback) {
+      rest.parsers.json.call(this, data, function(err, data) {
+        err || (data.__parsedBy__ = 'github');
+        callback(err, data);
+      });
+    };
+    rest.get(host + '/custom-mime').on('complete', function(data) {
+      test.expect(3);
+      test.ok(Array.isArray(data), 'should be array, returned: ' + sys.inspect(data));
+      test.equal(data.join(''), '666', 'should be [6,6,6], returned: ' + sys.inspect(data));
+      test.equal(data.__parsedBy__, 'github', 'should use vendor-specific parser, returned: ' + sys.inspect(data.__parsedBy__));
       test.done();
     });
   }
