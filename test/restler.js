@@ -1,8 +1,12 @@
 
-var rest = require('../lib/restler');
-var http = require('http');
-var sys  = require('util');
-var zlib = require('zlib');
+var rest   = require('../lib/restler');
+var http   = require('http');
+var sys    = require('util');
+var zlib   = require('zlib');
+var path   = require('path');
+var fs     = require('fs');
+var crypto = require('crypto');
+
 var p = sys.inspect;
 
 var port = 9000;
@@ -470,10 +474,53 @@ module.exports['Deserialization'] = {
     }).on('fail', function() {
       test.ok(false, 'should not have got here');
     });
-  },
-
+  }
 
 };
+
+
+function md5(data) {
+  return crypto.createHash('md5').update(data).digest('hex');
+}
+
+function charsetsResponse(request, response) {
+  var charset = request.url.substr(1);
+  response.writeHead(200, {
+    'content-type': 'text/plain; charset=' + charset,
+    'content-encoding': 'gzip'
+  });
+  fs.createReadStream(path.join(__dirname, charsetsDir, charset)).pipe(zlib.createGzip()).pipe(response);
+}
+
+module.exports['Charsets'] = {
+  setUp: setup(charsetsResponse),
+  tearDown: teardown()
+};
+
+var charsetsDir = 'charsets';
+var charsetCases = {
+  /**
+   * key   - the name of the charset of tested file found in <charsetsDir> directory with the same name
+   * value - md5 hash of properly utf8-iconv'erted file.
+   */
+  'iso-8859-1'   : '8c7fbd6fb81d089573540bf0bdf82cc6',
+  'gb2312'       : 'ab788473ee3b5f5fff5eba4ca6172834',
+  'windows-1251' : 'ab90f5e5333149acbfd58441cfe69d70',
+  'shift_jis'    : '3b93ee3382ed73ec6d064a2ce852a50a',
+  'windows-1252' : 'b9bd334aeb238eb104628168cb011351',
+  'gbk'          : '01329db97a6a202ecffaf95d4f77a18d'
+};
+
+for (var charset in charsetCases) {
+  (function(charset, hash) {
+    module.exports['Charsets']['Should correctly convert charset ' + charset] = function(test) {
+      rest.get(host + '/' + charset).on('complete', function(data) {
+        test.equal(md5(Buffer(data, 'utf8')), hash, 'hashes should match');
+        test.done();
+      });
+    };
+  })(charset, charsetCases[charset]);
+}
 
 
 function redirectResponse(request, response) {
