@@ -54,6 +54,18 @@ Create a PUT request.
 
 Create a DELETE request.
 
+### head(url, options)
+
+Create a HEAD request.
+
+### json(url, data, options)
+
+Send json `data` via GET method.
+
+### postJson(url, data, options)
+
+Send json `data` via POST method.
+
 ### response parsers
 
 You can give any of these to the parsers option to specify how the response data is deserialized.
@@ -74,6 +86,7 @@ All of these attempt to turn the response into a JavaScript object. In order to 
 * `data` The data to be added to the body of the request. Can be a string or any object.
 Note that if you want your request body to be JSON with the `Content-Type: application/json`, you need to
 `JSON.stringify` your object first. Otherwise, it will be sent as `application/x-www-form-urlencoded` and encoded accordingly.
+Also you can use `json()` and `postJson()` methods.
 * `parser` A function that will be called on the returned data. Use any of predefined `restler.parsers`. See parsers section below. Defaults to `restler.parsers.auto`.
 * `encoding` The encoding of the request body. Defaults to `"utf8"`.
 * `decoding` The encoding of the response body. For a list of supported values see [Buffers](http://nodejs.org/docs/latest/api/buffers.html#buffers). Additionally accepts `"buffer"` - returns response as `Buffer`. Defaults to `"utf8"`.
@@ -142,12 +155,12 @@ client.update('Tweeting using a Restler service thingy').on('complete', function
   sys.p(data);
 });
 
-// the JSON post
-rest.post('http://example.com/action', {
-  data: JSON.stringify({ id: 334 }),
-}).on('complete', function(data, response) {
-  // you can get at the raw response like this...
+// post JSON
+var jsonData = { id: 334 };
+rest.postJson('http://example.com/action', jsonData).on('complete', function(data, response) {
+  // handle response
 });
+
 ```
     
 Running the tests

@@ -254,6 +254,18 @@ function dataResponse(request, response) {
       response.writeHead(200);
       response.end(Buffer([9, 30, 64, 135, 200]));
       break;
+    case '/push-json':
+      var echo = '';
+      request.addListener('data', function(chunk) {
+        echo += chunk.toString('binary');
+      });
+      request.addListener('end', function() {
+        response.writeHead(200, {
+          'content-type': 'application/json',
+        });
+        response.end(JSON.stringify(JSON.parse(echo)));
+      });
+      break;
     default:
       response.writeHead(404);
       response.end();
@@ -336,6 +348,27 @@ module.exports['Deserialization'] = {
       test.equal(data, 'CR5Ah8g=', 'returned: ' + sys.inspect(data));
       test.done();
     })
+  },
+
+  'Should post and parse JSON': function(test) {
+    var obj = { secret : 'very secret string' };
+    rest.post(host + '/push-json', {
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: JSON.stringify(obj)
+    }).on('complete', function(data) {
+      test.equal(obj.secret, data.secret, 'returned: ' + sys.inspect(data));
+      test.done();
+    })
+  },
+
+  'Should post and parse JSON via shortcut method': function(test) {
+    var obj = { secret : 'very secret string' };
+    rest.postJson(host + '/push-json', obj).on('complete', function(data) {
+      test.equal(obj.secret, data.secret, 'returned: ' + sys.inspect(data));
+      test.done();
+    });
   }
 
 };
