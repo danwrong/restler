@@ -40,7 +40,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 * `error: function(err, response)` - emitted when some errors have occurred (eg. connection aborted, parse, encoding, decoding failed or some other unhandled errors). Gets passed the `Error` object and the response object (when available) as arguments.
 * `abort: function()` - emitted when `request.abort()` is called.
 * `2XX`, `3XX`, `4XX`, `5XX: function(data, response)` - emitted for all requests with response codes in the range (eg. `2XX` emitted for 200, 201, 203).
-* <code><i>actual response code</i>: function(data, response)<code> - emitted for every single response code (eg. 404, 201, etc).
+* <code><i>actual response code</i>: function(data, response)</code> - emitted for every single response code (eg. 404, 201, etc).
 
 #### members
 
