@@ -273,6 +273,18 @@ function dataResponse(request, response) {
       });
       response.end(JSON.stringify([6,6,6]));
       break;
+    case '/mal-json':
+      response.writeHead(200, { 'content-type': 'application/json' });
+      response.end('Чебурашка');
+      break;
+    case '/mal-xml':
+      response.writeHead(200, { 'content-type': 'application/xml' });
+      response.end('Чебурашка');
+      break;
+    case '/mal-yaml':
+      response.writeHead(200, { 'content-type': 'application/yaml' });
+      response.end('{Чебурашка');
+      break;
     default:
       response.writeHead(404);
       response.end();
@@ -410,7 +422,56 @@ module.exports['Deserialization'] = {
     }).on('fail', function() {
       test.ok(false, 'should not have got here');
     }).abort();
-  }
+  },
+
+  'Should correctly handle malformed JSON': function(test) {
+    test.expect(4);
+    rest.get(host + '/mal-json').on('complete', function(data, response) {
+      test.ok(data instanceof Error, 'should be instanceof Error, got: ' + p(data));
+      test.re(data.message, /^Failed to parse/, 'should contain "Failed to parse", got: ' + p(data.message));
+      test.equal(response.raw, 'Чебурашка', 'should be "Чебурашка", got: ' + p(response.raw));
+      test.done();
+    }).on('error', function(err) {
+      test.ok(err instanceof Error, 'should be instanceof Error, got: ' + p(err));
+    }).on('success', function() {
+      test.ok(false, 'should not have got here');
+    }).on('fail', function() {
+      test.ok(false, 'should not have got here');
+    });
+  },
+
+  'Should correctly handle malformed XML': function(test) {
+    test.expect(4);
+    rest.get(host + '/mal-xml').on('complete', function(data, response) {
+      test.ok(data instanceof Error, 'should be instanceof Error, got: ' + p(data));
+      test.re(data.message, /^Failed to parse/, 'should contain "Failed to parse", got: ' + p(data.message));
+      test.equal(response.raw, 'Чебурашка', 'should be "Чебурашка", got: ' + p(response.raw));
+      test.done();
+    }).on('error', function(err) {
+      test.ok(err instanceof Error, 'should be instanceof Error, got: ' + p(err));
+    }).on('success', function() {
+      test.ok(false, 'should not have got here');
+    }).on('fail', function() {
+      test.ok(false, 'should not have got here');
+    });
+  },
+
+  'Should correctly handle malformed YAML': function(test) {
+    test.expect(4);
+    rest.get(host + '/mal-yaml').on('complete', function(data, response) {
+      test.ok(data instanceof Error, 'should be instanceof Error, got: ' + p(data));
+      test.re(data.message, /^Failed to parse/, 'should contain "Failed to parse", got: ' + p(data.message));
+      test.equal(response.raw, '{Чебурашка', 'should be "{Чебурашка", got: ' + p(response.raw));
+      test.done();
+    }).on('error', function(err) {
+      test.ok(err instanceof Error, 'should be instanceof Error, got: ' + p(err));
+    }).on('success', function() {
+      test.ok(false, 'should not have got here');
+    }).on('fail', function() {
+      test.ok(false, 'should not have got here');
+    });
+  },
+
 
 };
 

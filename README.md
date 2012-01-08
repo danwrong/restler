@@ -75,9 +75,11 @@ Send json `data` via GET method.
 
 Send json `data` via POST method.
 
-### response parsers
+
+### Parsers
 
 You can give any of these to the parsers option to specify how the response data is deserialized.
+In case of malformed content, parsers emit `error` event. Original data returned by server is stored in `response.raw`.
 
 #### parsers.auto
 
