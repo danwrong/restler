@@ -29,14 +29,14 @@ API
 
 ### request(url, options)
 
-Basic method to make a request of any type.  The function returns a RestRequest object
-that emits events:
+Basic method to make a request of any type. The function returns a RestRequest object that emits events:
 
-* _complete_ emitted when the request has finished whether it was successful or not.  Gets passed the response data and the response as arguments.
-* _success_ emitted when the request was successful.  Gets passed the response data and the response as arguments.
-* _error_ emitted when the request was unsuccessful.  Gets passed the response data and the response as arguments.
-* _2XX, 3XX, 4XX, 5XX etc_ emitted for all requests with response codes in the range.  Eg. 2XX emitted for 200, 201, 203
-* _actual response code_ there is an event emitted for every single response code.  eg.  404, 201, etc.
+* `complete: function(data, response)` - emitted when the request has finished whether it was successful or not. Gets passed the response data and the response object as arguments. If some error has occurred, `data` is always instance of `Error`.
+* `success: function(data, response)` - emitted when the request was successful. Gets passed the response data and the response object as arguments.
+* `fail`: function(data, response)` - emitted when the request was successful, but 4xx status code returned. Gets passed the response data and the response object as arguments.
+* `error`: function(err, response)` - emitted when some errors have occurred (eg. connection aborted, parse, encoding, decoding failed or some other unhandled errors). Gets passed the `Error` object and the response object (when available) as arguments.
+* `2XX`, `3XX`, `4XX`, `5XX: function(data, response)` - emitted for all requests with response codes in the range (eg. `2XX` emitted for 200, 201, 203).
+* <code><i>actual response code</i>: function(data, response)<code> - emitted for every single response code (eg. 404, 201, etc).
 
 ### get(url, options)
 
@@ -67,22 +67,22 @@ If the content type isn't recognised it just returns the data untouched.
 
 All of these attempt to turn the response into a JavaScript object. In order to use the YAML and XML parsers you must have yaml and/or xml2js installed.
 
-### options hash
+### Options
 
-* _method_ Request method, can be get, post, put, del
-* _query_ Query string variables as a javascript object, will override the querystring in the URL
-* _data_ The data to be added to the body of the request.  Can be a string or any object. 
-Note that if you want your request body to be JSON with the Content-Type `application/json`, you need to 
-JSON.stringify your object first. Otherwise, it will be sent as `application/x-www-form-urlencoded` and encoded accordingly.
-* _parser_ A function that will be called on the returned data.  try parsers.auto, parsers.json etc
-* _encoding_ The encoding of the request body.  defaults to utf8
-* _decoding_ The encoding of the response body. For a list of supported values see [Buffers](http://nodejs.org/docs/latest/api/buffers.html#buffers). Additionally accepts `"buffer"` - returns response as `Buffer`. Defaults to `utf8`.
-* _headers_ a hash of HTTP headers to be sent
-* _username_ Basic auth username
-* _password_ Basic auth password
-* _multipart_ If set the data passed will be formated as multipart/form-encoded.  See multipart example below.
-* _client_ A http.Client instance if you want to reuse or implement some kind of connection pooling.
-* _followRedirects_ Does what it says on the tin.
+* `method` Request method, can be get, post, put, del. Defaults to `"get"`.
+* `query` Query string variables as a javascript object, will override the querystring in the URL. Defaults to empty.
+* `data` The data to be added to the body of the request. Can be a string or any object.
+Note that if you want your request body to be JSON with the `Content-Type: application/json`, you need to
+`JSON.stringify` your object first. Otherwise, it will be sent as `application/x-www-form-urlencoded` and encoded accordingly.
+* `parser` A function that will be called on the returned data. Use any of predefined `restler.parsers`. See parsers section below. Defaults to `restler.parsers.auto`.
+* `encoding` The encoding of the request body. Defaults to `"utf8"`.
+* `decoding` The encoding of the response body. For a list of supported values see [Buffers](http://nodejs.org/docs/latest/api/buffers.html#buffers). Additionally accepts `"buffer"` - returns response as `Buffer`. Defaults to `"utf8"`.
+* `headers` A hash of HTTP headers to be sent. Defaults to `{ 'Accept': '*/*', 'User-Agent': 'Restler for node.js' }`.
+* `username` Basic auth username. Defaults to empty.
+* `password` Basic auth password. Defaults to empty.
+* `multipart` If set the data passed will be formated as `multipart/form-encoded`. See multipart example below. Defaults to `false`.
+* `client` A http.Client instance if you want to reuse or implement some kind of connection pooling. Defaults to empty.
+* `followRedirects` If set will recursively follow redirects. Defaults to `true`.
 
 
 Example usage
@@ -152,11 +152,24 @@ rest.post('http://example.com/action', {
     
 Running the tests
 -----------------
+install **[nodeunit](https://github.com/caolan/nodeunit)**
 
-```javascript
-node test/restler.js
+```bash
+npm install nodeunit
 ```
-    
+
+then
+
+```bash
+node test/all.js
+```
+
+or
+
+```bash
+nodeunit test/restler.js
+```
+
 TODO
 ----
 * Deal with no utf-8 response bodies
