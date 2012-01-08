@@ -45,12 +45,14 @@ function echoResponse(request, response) {
   request.addListener('data', function(chunk) {
     echo += chunk.toString('binary');
   });
+
   request.addListener('end', function() {
     response.writeHead(request.headers['x-status-code'] || 200, {
-      'Content-Type': 'text/plain',
-      'Content-Length': echo.length
+      'content-type': 'text/plain',
+      'content-length': echo.length,
+      'request-method': request.method.toLowerCase()
     });
-    response.end(echo);
+    response.end(request.method == 'HEAD' ? undefined : echo);
   });
 }
 
@@ -83,6 +85,13 @@ module.exports['Basic'] = {
   'Should DELETE': function(test) {
     rest.del(host).on('complete', function(data) {
       test.re(data, /^DELETE/, 'should be DELETE');
+      test.done();
+    });
+  },
+
+  'Should HEAD': function(test) {
+    rest.head(host).on('complete', function(data, response) {
+      test.equal(response.headers['request-method'], 'head', 'should be HEAD');
       test.done();
     });
   },
