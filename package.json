@@ -1,15 +1,14 @@
 {
     "name": "restler",
-    "version": "0.2.4",
+    "version": "2.0.0",
     "description": "An HTTP client library for node.js",
     "contributors": [{ "name": "Dan Webb", "email": "dan@danwebb.net" }],
     "homepage": "https://github.com/danwrong/restler",
     "directories" : { "lib" : "./lib" },
     "main" : "./lib/restler",
-    "engines": { "node": ">= 0.3.7" },
+    "engines": { "node": ">= 0.6.x" },
     "dependencies": {
-        "iconv": ">=1.0.0",
-        "zlib" : ">=1.0.0"
+        "iconv": ">=1.0.0"
     },
     "devDependencies": {
         "nodeunit": ">=0.5.0",
