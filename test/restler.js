@@ -2,10 +2,13 @@
 var rest   = require('../lib/restler');
 var http   = require('http');
 var sys    = require('util');
-var zlib   = require('zlib');
 var path   = require('path');
 var fs     = require('fs');
 var crypto = require('crypto');
+var zlib   = null;
+try {
+  zlib = require('zlib');
+} catch (err) {}
 
 var p = sys.inspect;
 
@@ -322,31 +325,43 @@ module.exports['Deserialization'] = {
   },
 
   'Should gunzip': function(test) {
-    rest.get(host + '/gzip').on('complete', function(data) {
-      test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+    if (zlib) {
+      rest.get(host + '/gzip').on('complete', function(data) {
+        test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+        test.done();
+      });
+    } else {
       test.done();
-    })
+    }
   },
 
   'Should inflate': function(test) {
-    rest.get(host + '/deflate').on('complete', function(data) {
-      test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+    if (zlib) {
+      rest.get(host + '/deflate').on('complete', function(data) {
+        test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+        test.done();
+      })
+    } else {
       test.done();
-    })
+    }
   },
 
   'Should decode and parse': function(test) {
-    rest.get(host + '/truth').on('complete', function(data) {
-      try {
-        with (data) {
-          var result = what + (is + the + answer + to + life + the + universe + and + everything).length;
+    if (zlib) {
+      rest.get(host + '/truth').on('complete', function(data) {
+        try {
+          with (data) {
+            var result = what + (is + the + answer + to + life + the + universe + and + everything).length;
+          }
+          test.equal(result, 42, 'returned: ' + p(data));
+        } catch (err) {
+          test.ok(false, 'returned: ' + p(data));
         }
-        test.equal(result, 42, 'returned: ' + p(data));
-      } catch (err) {
-        test.ok(false, 'returned: ' + p(data));
-      }
+        test.done();
+      })
+    } else {
       test.done();
-    })
+    }
   },
 
   'Should decode as buffer': function(test) {
@@ -487,9 +502,13 @@ function charsetsResponse(request, response) {
   var charset = request.url.substr(1);
   response.writeHead(200, {
     'content-type': 'text/plain; charset=' + charset,
-    'content-encoding': 'gzip'
+    'content-encoding': zlib ? 'gzip' : ''
   });
-  fs.createReadStream(path.join(__dirname, charsetsDir, charset)).pipe(zlib.createGzip()).pipe(response);
+  var stream = fs.createReadStream(path.join(__dirname, charsetsDir, charset));
+  if (zlib) {
+    stream = stream.pipe(zlib.createGzip());
+  }
+  stream.pipe(response);
 }
 
 module.exports['Charsets'] = {
@@ -600,4 +619,3 @@ module.exports['Content-Length'] = {
   }
 
 };
-
