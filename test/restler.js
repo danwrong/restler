@@ -6,8 +6,14 @@ var path   = require('path');
 var fs     = require('fs');
 var crypto = require('crypto');
 var zlib   = null;
+var Iconv  = null;
+
 try {
   zlib = require('zlib');
+} catch (err) {}
+
+try {
+  Iconv = require('iconv').Iconv;
 } catch (err) {}
 
 var p = sys.inspect;
@@ -530,15 +536,17 @@ var charsetCases = {
   'gbk'          : '01329db97a6a202ecffaf95d4f77a18d'
 };
 
-for (var charset in charsetCases) {
-  (function(charset, hash) {
-    module.exports['Charsets']['Should correctly convert charset ' + charset] = function(test) {
-      rest.get(host + '/' + charset).on('complete', function(data) {
-        test.equal(md5(Buffer(data, 'utf8')), hash, 'hashes should match');
-        test.done();
-      });
-    };
-  })(charset, charsetCases[charset]);
+if (Iconv) {
+  for (var charset in charsetCases) {
+    (function(charset, hash) {
+      module.exports['Charsets']['Should correctly convert charset ' + charset] = function(test) {
+        rest.get(host + '/' + charset).on('complete', function(data) {
+          test.equal(md5(Buffer(data, 'utf8')), hash, 'hashes should match');
+          test.done();
+        });
+      };
+    })(charset, charsetCases[charset]);
+  }
 }
 
 

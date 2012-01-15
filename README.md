@@ -22,7 +22,7 @@ Features
 * Deals with basic auth for you, just provide username and password options
 * Simple service wrapper that allows you to easily put together REST API libraries
 * Transparently handle content-encoded responses (gzip, deflate) (requires node 0.6+)
-* Transparently handle different content charsets via `iconv`
+* Transparently handle different content charsets via [iconv](https://github.com/bnoordhuis/node-iconv) (if available)
 
 
 API
