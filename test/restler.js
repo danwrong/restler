@@ -298,6 +298,12 @@ function dataResponse(request, response) {
       response.writeHead(200, { 'content-type': 'application/yaml' });
       response.end('{Чебурашка');
       break;
+    case '/abort':
+      setTimeout(function() {
+        response.writeHead(200);
+        response.end('not aborted');
+      }, 100);
+      break;
     default:
       response.writeHead(404);
       response.end();
@@ -431,22 +437,39 @@ module.exports['Deserialization'] = {
     });
   },
 
-  'Should correctly abort request': function(test) {
-    test.expect(5);
-    rest.get(host + '/json').on('complete', function(data) {
-      test.ok(data instanceof Error, 'should be error, got: ' + p(data));
-      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
+  'Should correctly soft-abort request': function(test) {
+    test.expect(4);
+    rest.get(host + '/abort').on('complete', function(data) {
+      test.equal(data, null, 'data should be null');
+      test.equal(this.aborted, true, 'should be aborted');
       test.done();
-    }).on('error', function(data) {
+    }).on('error', function(err) {
+        test.ok(false, 'should not emit error event');
+      }).on('abort', function(err) {
+        test.equal(err, null, 'err should be null');
+        test.equal(this.aborted, true, 'should be aborted');
+      }).on('success', function() {
+        test.ok(false, 'should not emit success event');
+      }).on('fail', function() {
+        test.ok(false, 'should not emit fail event');
+      }).abort();
+  },
+
+  'Should correctly hard-abort request': function(test) {
+    test.expect(4);
+    rest.get(host + '/abort').on('complete', function(data) {
       test.ok(data instanceof Error, 'should be error, got: ' + p(data));
-      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
-    }).on('abort', function() {
-      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
-    }).on('success', function() {
-      test.ok(false, 'should not have got here');
-    }).on('fail', function() {
-      test.ok(false, 'should not have got here');
-    }).abort();
+      test.equal(this.aborted, true, 'should be aborted');
+      test.done();
+    }).on('error', function(err) {
+        test.ok(err instanceof Error, 'should be error, got: ' + p(err));
+      }).on('abort', function(err) {
+        test.equal(this.aborted, true, 'should be aborted');
+      }).on('success', function() {
+        test.ok(false, 'should not emit success event');
+      }).on('fail', function() {
+        test.ok(false, 'should not emit fail event');
+      }).abort(true);
   },
 
   'Should correctly handle malformed JSON': function(test) {
