@@ -24,8 +24,8 @@ Features
 * Transparently handle SSL (just specify https in the URL)
 * Deals with basic auth for you, just provide username and password options
 * Simple service wrapper that allows you to easily put together REST API libraries
-* Transparently handle content-encoded responses (gzip, deflate)
-* Transparently handle different content charsets via `iconv`
+* Transparently handle content-encoded responses (gzip, deflate) (requires node 0.6+)
+* Transparently handle different content charsets via [iconv](https://github.com/bnoordhuis/node-iconv) (if available)
 
 
 API
@@ -47,7 +47,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 
 #### members
 
-* `abort()` Cancels request. `abort` event is emitted. `aborted` property is set to `true`. only `complete` and `error` event should.
+* `abort([error])` Cancels request. `abort` event is emitted. `request.aborted` is set to `true`. If non-falsy `error` is passed, then `error` will be additionaly emitted (with `error` passed as a param and `error.type` is set to `"abort"`). Otherwise only `complete` event will raise.
 * `aborted` Determines if request was aborted.
 
 

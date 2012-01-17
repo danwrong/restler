@@ -2,10 +2,19 @@
 var rest   = require('../lib/restler');
 var http   = require('http');
 var sys    = require('util');
-var zlib   = require('zlib');
 var path   = require('path');
 var fs     = require('fs');
 var crypto = require('crypto');
+var zlib   = null;
+var Iconv  = null;
+
+try {
+  zlib = require('zlib');
+} catch (err) {}
+
+try {
+  Iconv = require('iconv').Iconv;
+} catch (err) {}
 
 var p = sys.inspect;
 
@@ -289,6 +298,12 @@ function dataResponse(request, response) {
       response.writeHead(200, { 'content-type': 'application/yaml' });
       response.end('{Чебурашка');
       break;
+    case '/abort':
+      setTimeout(function() {
+        response.writeHead(200);
+        response.end('not aborted');
+      }, 100);
+      break;
     default:
       response.writeHead(404);
       response.end();
@@ -322,31 +337,43 @@ module.exports['Deserialization'] = {
   },
 
   'Should gunzip': function(test) {
-    rest.get(host + '/gzip').on('complete', function(data) {
-      test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+    if (zlib) {
+      rest.get(host + '/gzip').on('complete', function(data) {
+        test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+        test.done();
+      });
+    } else {
       test.done();
-    })
+    }
   },
 
   'Should inflate': function(test) {
-    rest.get(host + '/deflate').on('complete', function(data) {
-      test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+    if (zlib) {
+      rest.get(host + '/deflate').on('complete', function(data) {
+        test.re(data, /^(compressed data){10}$/, 'returned: ' + p(data));
+        test.done();
+      })
+    } else {
       test.done();
-    })
+    }
   },
 
   'Should decode and parse': function(test) {
-    rest.get(host + '/truth').on('complete', function(data) {
-      try {
-        with (data) {
-          var result = what + (is + the + answer + to + life + the + universe + and + everything).length;
+    if (zlib) {
+      rest.get(host + '/truth').on('complete', function(data) {
+        try {
+          with (data) {
+            var result = what + (is + the + answer + to + life + the + universe + and + everything).length;
+          }
+          test.equal(result, 42, 'returned: ' + p(data));
+        } catch (err) {
+          test.ok(false, 'returned: ' + p(data));
         }
-        test.equal(result, 42, 'returned: ' + p(data));
-      } catch (err) {
-        test.ok(false, 'returned: ' + p(data));
-      }
+        test.done();
+      })
+    } else {
       test.done();
-    })
+    }
   },
 
   'Should decode as buffer': function(test) {
@@ -410,22 +437,39 @@ module.exports['Deserialization'] = {
     });
   },
 
-  'Should correctly abort request': function(test) {
-    test.expect(5);
-    rest.get(host + '/json').on('complete', function(data) {
-      test.ok(data instanceof Error, 'should be error, got: ' + p(data));
-      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
+  'Should correctly soft-abort request': function(test) {
+    test.expect(4);
+    rest.get(host + '/abort').on('complete', function(data) {
+      test.equal(data, null, 'data should be null');
+      test.equal(this.aborted, true, 'should be aborted');
       test.done();
-    }).on('error', function(data) {
+    }).on('error', function(err) {
+        test.ok(false, 'should not emit error event');
+      }).on('abort', function(err) {
+        test.equal(err, null, 'err should be null');
+        test.equal(this.aborted, true, 'should be aborted');
+      }).on('success', function() {
+        test.ok(false, 'should not emit success event');
+      }).on('fail', function() {
+        test.ok(false, 'should not emit fail event');
+      }).abort();
+  },
+
+  'Should correctly hard-abort request': function(test) {
+    test.expect(4);
+    rest.get(host + '/abort').on('complete', function(data) {
       test.ok(data instanceof Error, 'should be error, got: ' + p(data));
-      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
-    }).on('abort', function() {
-      test.equal(this.aborted, true, 'should aborted, got: ' + p(this.aborted));
-    }).on('success', function() {
-      test.ok(false, 'should not have got here');
-    }).on('fail', function() {
-      test.ok(false, 'should not have got here');
-    }).abort();
+      test.equal(this.aborted, true, 'should be aborted');
+      test.done();
+    }).on('error', function(err) {
+        test.ok(err instanceof Error, 'should be error, got: ' + p(err));
+      }).on('abort', function(err) {
+        test.equal(this.aborted, true, 'should be aborted');
+      }).on('success', function() {
+        test.ok(false, 'should not emit success event');
+      }).on('fail', function() {
+        test.ok(false, 'should not emit fail event');
+      }).abort(true);
   },
 
   'Should correctly handle malformed JSON': function(test) {
@@ -487,9 +531,13 @@ function charsetsResponse(request, response) {
   var charset = request.url.substr(1);
   response.writeHead(200, {
     'content-type': 'text/plain; charset=' + charset,
-    'content-encoding': 'gzip'
+    'content-encoding': zlib ? 'gzip' : ''
   });
-  fs.createReadStream(path.join(__dirname, charsetsDir, charset)).pipe(zlib.createGzip()).pipe(response);
+  var stream = fs.createReadStream(path.join(__dirname, charsetsDir, charset));
+  if (zlib) {
+    stream = stream.pipe(zlib.createGzip());
+  }
+  stream.pipe(response);
 }
 
 module.exports['Charsets'] = {
@@ -511,15 +559,17 @@ var charsetCases = {
   'gbk'          : '01329db97a6a202ecffaf95d4f77a18d'
 };
 
-for (var charset in charsetCases) {
-  (function(charset, hash) {
-    module.exports['Charsets']['Should correctly convert charset ' + charset] = function(test) {
-      rest.get(host + '/' + charset).on('complete', function(data) {
-        test.equal(md5(Buffer(data, 'utf8')), hash, 'hashes should match');
-        test.done();
-      });
-    };
-  })(charset, charsetCases[charset]);
+if (Iconv) {
+  for (var charset in charsetCases) {
+    (function(charset, hash) {
+      module.exports['Charsets']['Should correctly convert charset ' + charset] = function(test) {
+        rest.get(host + '/' + charset).on('complete', function(data) {
+          test.equal(md5(Buffer(data, 'utf8')), hash, 'hashes should match');
+          test.done();
+        });
+      };
+    })(charset, charsetCases[charset]);
+  }
 }
 
 
@@ -600,4 +650,3 @@ module.exports['Content-Length'] = {
   }
 
 };
-
