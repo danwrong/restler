@@ -37,7 +37,7 @@ function setup(response) {
 
 function teardown() {
   return function (next) {
-    this.server.close();
+    this.server._handle && this.server.close();
     process.nextTick(next);
   };
 }
@@ -66,7 +66,9 @@ function echoResponse(request, response) {
       'content-length': echo.length,
       'request-method': request.method.toLowerCase()
     });
-    response.end(request.method == 'HEAD' ? undefined : echo);
+    setTimeout(function() {
+      response.end(request.method == 'HEAD' ? undefined : echo);
+    }, request.headers['x-delay'] | 0);
   });
 }
 
@@ -211,6 +213,52 @@ module.exports['Basic'] = {
       test.ok(true);
       test.done();
     });
+  },
+
+  'Should correctly retry': function(test) {
+    var counter = 0;
+    rest.get(host, { headers: { 'x-connection-abort': 'true' }}).on('complete', function() {
+      if (++counter < 3) {
+        this.retry(10);
+      } else {
+        test.ok(true);
+        test.done();
+      }
+    });
+  },
+
+  'Should correctly retry after abort': function(test) {
+    var counter = 0;
+    rest.get(host).on('complete', function() {
+      if (++counter < 3) {
+        this.retry().abort();
+      } else {
+        test.ok(true);
+        test.done();
+      }
+    }).abort();
+  },
+
+  'Should correctly retry while pending': function(test) {
+    var counter = 0, request;
+    function command() {
+      var args = [].slice.call(arguments);
+      var method = args.shift();
+      method && setTimeout(function() {
+        request[method]();
+        command.apply(null, args);
+      }, 50);
+    }
+
+    request = rest.get(host, { headers: { 'x-delay': '1000' } }).on('complete', function() {
+      if (++counter < 3) {
+        command('retry', 'abort');
+      } else {
+        test.ok(true);
+        test.done();
+      }
+    });
+    command('abort');
   }
 
 };

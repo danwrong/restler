@@ -49,6 +49,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 #### members
 
 * `abort([error])` Cancels request. `abort` event is emitted. `request.aborted` is set to `true`. If non-falsy `error` is passed, then `error` will be additionaly emitted (with `error` passed as a param and `error.type` is set to `"abort"`). Otherwise only `complete` event will raise.
+* `retry([timeout])` Re-sends request after `timeout` ms. Pending request is aborted.
 * `aborted` Determines if request was aborted.
 
 
@@ -121,8 +122,13 @@ Example usage
 var sys = require('util'),
     rest = require('./restler');
 
-rest.get('http://google.com').on('complete', function(data) {
-  sys.puts(data);
+rest.get('http://google.com').on('complete', function(err, data) {
+  if (err) {
+    sys.puts('Error: ' + err.message);
+    this.retry(5000); // try again after 5 sec
+  } else {
+    sys.puts(data);
+  }
 });
 
 rest.get('http://twaud.io/api/v1/users/danwrong.json').on('complete', function(data) {
