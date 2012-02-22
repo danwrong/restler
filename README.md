@@ -38,7 +38,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 
 #### events
 
-* `complete: function(data, response)` - emitted when the request has finished whether it was successful or not. Gets passed the response data and the response object as arguments. If some error has occurred, `data` is always instance of `Error`.
+* `complete: function(result, response)` - emitted when the request has finished whether it was successful or not. Gets passed the response result and the response object as arguments. If some error has occurred, `result` is always instance of `Error`, otherwise it contains response data.
 * `success: function(data, response)` - emitted when the request was successful. Gets passed the response data and the response object as arguments.
 * `fail: function(data, response)` - emitted when the request was successful, but 4xx status code returned. Gets passed the response data and the response object as arguments.
 * `error: function(err, response)` - emitted when some errors have occurred (eg. connection aborted, parse, encoding, decoding failed or some other unhandled errors). Gets passed the `Error` object and the response object (when available) as arguments.
@@ -49,12 +49,13 @@ Basic method to make a request of any type. The function returns a RestRequest o
 #### members
 
 * `abort([error])` Cancels request. `abort` event is emitted. `request.aborted` is set to `true`. If non-falsy `error` is passed, then `error` will be additionaly emitted (with `error` passed as a param and `error.type` is set to `"abort"`). Otherwise only `complete` event will raise.
+* `retry([timeout])` Re-sends request after `timeout` ms. Pending request is aborted.
 * `aborted` Determines if request was aborted.
 
 
 ### get(url, options)
 
-Create a GET request. 
+Create a GET request.
 
 ### post(url, options)
 
@@ -88,7 +89,7 @@ In case of malformed content, parsers emit `error` event. Original data returned
 
 #### parsers.auto
 
-Checks the content-type and then uses parsers.xml, parsers.json or parsers.yaml.  
+Checks the content-type and then uses parsers.xml, parsers.json or parsers.yaml.
 If the content type isn't recognised it just returns the data untouched.
 
 #### parsers.json, parsers.xml, parsers.yaml
@@ -121,8 +122,13 @@ Example usage
 var sys = require('util'),
     rest = require('./restler');
 
-rest.get('http://google.com').on('complete', function(data) {
-  sys.puts(data);
+rest.get('http://google.com').on('complete', function(result) {
+  if (result instanceof Error) {
+    sys.puts('Error: ' + result.message);
+    this.retry(5000); // try again after 5 sec
+  } else {
+    sys.puts(result);
+  }
 });
 
 rest.get('http://twaud.io/api/v1/users/danwrong.json').on('complete', function(data) {
@@ -178,7 +184,7 @@ rest.postJson('http://example.com/action', jsonData).on('complete', function(dat
 });
 
 ```
-    
+
 Running the tests
 -----------------
 install **[nodeunit](https://github.com/caolan/nodeunit)**

@@ -37,7 +37,7 @@ function setup(response) {
 
 function teardown() {
   return function (next) {
-    this.server.close();
+    this.server._handle && this.server.close();
     process.nextTick(next);
   };
 }
@@ -66,7 +66,9 @@ function echoResponse(request, response) {
       'content-length': echo.length,
       'request-method': request.method.toLowerCase()
     });
-    response.end(request.method == 'HEAD' ? undefined : echo);
+    setTimeout(function() {
+      response.end(request.method == 'HEAD' ? undefined : echo);
+    }, request.headers['x-delay'] | 0);
   });
 }
 
@@ -218,6 +220,52 @@ module.exports['Basic'] = {
       test.ok(true);
       test.done();
     });
+  },
+
+  'Should correctly retry': function(test) {
+    var counter = 0;
+    rest.get(host, { headers: { 'x-connection-abort': 'true' }}).on('complete', function() {
+      if (++counter < 3) {
+        this.retry(10);
+      } else {
+        test.ok(true);
+        test.done();
+      }
+    });
+  },
+
+  'Should correctly retry after abort': function(test) {
+    var counter = 0;
+    rest.get(host).on('complete', function() {
+      if (++counter < 3) {
+        this.retry().abort();
+      } else {
+        test.ok(true);
+        test.done();
+      }
+    }).abort();
+  },
+
+  'Should correctly retry while pending': function(test) {
+    var counter = 0, request;
+    function command() {
+      var args = [].slice.call(arguments);
+      var method = args.shift();
+      method && setTimeout(function() {
+        request[method]();
+        command.apply(null, args);
+      }, 50);
+    }
+
+    request = rest.get(host, { headers: { 'x-delay': '1000' } }).on('complete', function() {
+      if (++counter < 3) {
+        command('retry', 'abort');
+      } else {
+        test.ok(true);
+        test.done();
+      }
+    });
+    command('abort');
   }
 
 };
@@ -310,6 +358,12 @@ function dataResponse(request, response) {
         response.writeHead(200);
         response.end('not aborted');
       }, 100);
+      break;
+    case '/charset':
+      response.writeHead(200, {
+        'content-type': 'text/plain; charset=windows-1251'
+      });
+      response.end(Buffer('e0e1e2e3e4e5b8e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', 'hex'));
       break;
     default:
       response.writeHead(404);
@@ -529,54 +583,13 @@ module.exports['Deserialization'] = {
 
 };
 
-
-function md5(data) {
-  return crypto.createHash('md5').update(data).digest('hex');
-}
-
-function charsetsResponse(request, response) {
-  var charset = request.url.substr(1);
-  response.writeHead(200, {
-    'content-type': 'text/plain; charset=' + charset,
-    'content-encoding': zlib ? 'gzip' : ''
-  });
-  var stream = fs.createReadStream(path.join(__dirname, charsetsDir, charset));
-  if (zlib) {
-    stream = stream.pipe(zlib.createGzip());
-  }
-  stream.pipe(response);
-}
-
-module.exports['Charsets'] = {
-  setUp: setup(charsetsResponse),
-  tearDown: teardown()
-};
-
-var charsetsDir = 'charsets';
-var charsetCases = {
-  /**
-   * key   - the name of the charset of tested file found in <charsetsDir> directory with the same name
-   * value - md5 hash of properly utf8-iconv'erted file.
-   */
-  'iso-8859-1'   : '8c7fbd6fb81d089573540bf0bdf82cc6',
-  'gb2312'       : 'ab788473ee3b5f5fff5eba4ca6172834',
-  'windows-1251' : 'ab90f5e5333149acbfd58441cfe69d70',
-  'shift_jis'    : '3b93ee3382ed73ec6d064a2ce852a50a',
-  'windows-1252' : 'b9bd334aeb238eb104628168cb011351',
-  'gbk'          : '01329db97a6a202ecffaf95d4f77a18d'
-};
-
 if (Iconv) {
-  for (var charset in charsetCases) {
-    (function(charset, hash) {
-      module.exports['Charsets']['Should correctly convert charset ' + charset] = function(test) {
-        rest.get(host + '/' + charset).on('complete', function(data) {
-          test.equal(md5(Buffer(data, 'utf8')), hash, 'hashes should match');
-          test.done();
-        });
-      };
-    })(charset, charsetCases[charset]);
-  }
+  module.exports['Deserialization']['Should correctly convert charsets '] = function(test) {
+    rest.get(host + '/charset').on('complete', function(data) {
+      test.equal(data, 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя');
+      test.done();
+    });
+  };
 }
 
 
