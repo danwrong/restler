@@ -82,6 +82,13 @@ module.exports['Basic'] = {
     });
   },
 
+  'Should PATCH': function(test) {
+    rest.patch(host).on('complete', function(data) {
+      test.re(data, /^PATCH/, 'should be PATCH');
+      test.done();
+    });
+  },
+
   'Should PUT': function(test) {
     rest.put(host).on('complete', function(data) {
       test.re(data, /^PUT/, 'should be PUT');
