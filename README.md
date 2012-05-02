@@ -147,14 +147,14 @@ rest.post('http://user:pass@service.com/action', {
   }
 });
 
-// multipart request sending a file and using https
+// multipart request sending a 321567 byte long file using https
 rest.post('https://twaud.io/api/v1/upload.json', {
   multipart: true,
   username: 'danwrong',
   password: 'wouldntyouliketoknow',
   data: {
     'sound[message]': 'hello from restler!',
-    'sound[file]': rest.file('doug-e-fresh_the-show.mp3', null, null, null, 'audio/mpeg')
+    'sound[file]': rest.file('doug-e-fresh_the-show.mp3', null, 321567, null, 'audio/mpeg')
   }
 }).on('complete', function(data) {
   sys.puts(data.audio_url);

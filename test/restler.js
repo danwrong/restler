@@ -277,12 +277,14 @@ module.exports['Multipart'] = {
 
   'Test multipart request with simple vars': function(test) {
     rest.post(host, {
-      data: { a: 1, b: 'thing' },
+      data: { a: 10, b: 'thing' },
       multipart: true
     }).on('complete', function(data) {
       test.re(data, /content-type\: multipart\/form-data/, 'should set "content-type" header')
-      test.re(data, /name="a"(\s)+1/, 'should send a=1');
+      test.re(data, /name="a"(\s)+10/, 'should send a=10');
       test.re(data, /name="b"(\s)+thing/, 'should send b=thing');
+      test.re(data, /content-length: 200/, 'should send content-length header');
+
       test.done();
     });
   }
