@@ -98,7 +98,7 @@ All of these attempt to turn the response into a JavaScript object. In order to 
 
 ### Options
 
-* `method` Request method, can be get, post, put, del. Defaults to `"get"`.
+* `method` Request method, can be get, post, put, delete. Defaults to `"get"`.
 * `query` Query string variables as a javascript object, will override the querystring in the URL. Defaults to empty.
 * `data` The data to be added to the body of the request. Can be a string or any object.
 Note that if you want your request body to be JSON with the `Content-Type: application/json`, you need to
