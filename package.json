@@ -9,6 +9,10 @@
     }
   ],
   "homepage": "https://github.com/danwrong/restler",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danwrong/restler.git"
+  },
   "directories": {
     "lib": "./lib"
   },
