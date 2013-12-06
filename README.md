@@ -11,6 +11,20 @@ Ths change will inevitably affect those using older < 0.2.x versions of restler.
 
 See [Version History](https://github.com/danwrong/restler/wiki/Version-History) for changes
 
+Installing
+----------
+
+```
+npm install restler
+```
+
+Running the tests
+-----------------
+
+```
+npm test
+```
+
 
 Features
 --------
@@ -183,26 +197,6 @@ rest.postJson('http://example.com/action', jsonData).on('complete', function(dat
   // handle response
 });
 
-```
-
-Running the tests
------------------
-install **[nodeunit](https://github.com/caolan/nodeunit)**
-
-```bash
-npm install nodeunit
-```
-
-then
-
-```bash
-node test/all.js
-```
-
-or
-
-```bash
-nodeunit test/restler.js
 ```
 
 TODO
