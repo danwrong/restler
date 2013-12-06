@@ -87,6 +87,10 @@ Create a DELETE request.
 
 Create a HEAD request.
 
+### patch(url, options)
+
+Create a PATCH request.
+
 ### json(url, data, options)
 
 Send json `data` via GET method.
