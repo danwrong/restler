@@ -176,6 +176,13 @@ module.exports['Basic'] = {
     });
   },
 
+  'Should send basic auth with blank password': function(test) {
+    rest.post(host, { username: 'danwrong', password: '' }).on('complete', function(data) {
+      test.re(data, /authorization\: Basic ZGFud3Jvbmc6/, 'should have "authorization "header');
+      test.done();
+    });
+  },
+
   'Should send basic auth if in url': function(test) {
     rest.post('http://danwrong:flange@' + hostname + ':' + port).on('complete', function(data) {
       test.re(data, /authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/, 'should have "authorization" header');
