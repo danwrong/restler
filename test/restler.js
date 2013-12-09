@@ -666,6 +666,13 @@ module.exports['Content-Length'] = {
       test.equal(36, data, 'should byte-size content-length');
       test.done();
     });
+  },
+
+  'None data request content length': function (test) {
+    rest.post(host).on('complete', function(data) {
+      test.equal(0, data, 'should set content-length')
+      test.done();
+    })
   }
 
 };
