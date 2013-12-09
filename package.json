@@ -1,6 +1,6 @@
 {
   "name": "restler",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "An HTTP client library for node.js",
   "contributors": [
     {
