@@ -133,24 +133,23 @@ Example usage
 -------------
 
 ```javascript
-var sys = require('util'),
-    rest = require('./restler');
+var rest = require('./restler');
 
 rest.get('http://google.com').on('complete', function(result) {
   if (result instanceof Error) {
-    sys.puts('Error: ' + result.message);
+    console.log('Error:', result.message);
     this.retry(5000); // try again after 5 sec
   } else {
-    sys.puts(result);
+    console.log(result);
   }
 });
 
 rest.get('http://twaud.io/api/v1/users/danwrong.json').on('complete', function(data) {
-  sys.puts(data[0].message); // auto convert to object
+  console.log(data[0].message); // auto convert to object
 });
 
 rest.get('http://twaud.io/api/v1/users/danwrong.xml').on('complete', function(data) {
-  sys.puts(data[0].sounds[0].sound[0].message); // auto convert to object
+  console.log(data[0].sounds[0].sound[0].message); // auto convert to object
 });
 
 rest.post('http://user:pass@service.com/action', {
@@ -171,7 +170,7 @@ rest.post('https://twaud.io/api/v1/upload.json', {
     'sound[file]': rest.file('doug-e-fresh_the-show.mp3', null, 321567, null, 'audio/mpeg')
   }
 }).on('complete', function(data) {
-  sys.puts(data.audio_url);
+  console.log(data.audio_url);
 });
 
 // create a service constructor for very easy API wrappers a la HTTParty...
@@ -188,7 +187,7 @@ Twitter = rest.service(function(u, p) {
 
 var client = new Twitter('danwrong', 'password');
 client.update('Tweeting using a Restler service thingy').on('complete', function(data) {
-  sys.p(data);
+  console.log(data);
 });
 
 // post JSON
