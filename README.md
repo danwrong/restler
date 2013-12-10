@@ -3,11 +3,7 @@ Restler
 
 (C) Dan Webb (dan@danwebb.net/@danwrong) 2011, Licensed under the MIT-LICENSE
 
-An HTTP client library for node.js (0.6.x and up).  Hides most of the complexity of creating and using http.Client.
-
-**Release 2.x.x** is dedicated to modifying how errors are handled and emitted. Currently errors are being fired as an on 'error' event but as [@ctavan](https://github.com/ctavan) pointed out on [issue #36](https://github.com/danwrong/restler/pull/36) a better approach (and more commonly in vogue now) would be to pass the error obj to the callback.
-
-Ths change will inevitably affect those using older < 0.2.x versions of restler. Those not ready to upgrade yet are encouraged to stay on the 0.2.x version.
+An HTTP client library for node.js (0.10.x and up).  Hides most of the complexity of creating and using http.Client.
 
 See [Version History](https://github.com/danwrong/restler/wiki/Version-History) for changes
 

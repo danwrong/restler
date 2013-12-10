@@ -6,6 +6,10 @@
     {
       "name": "Dan Webb",
       "email": "dan@danwebb.net"
+    },
+    {
+      "name": "Ben Marvell",
+      "email": "ben@marvell-consulting.com"
     }
   ],
   "homepage": "https://github.com/danwrong/restler",
@@ -18,7 +22,7 @@
   },
   "main": "./lib/restler",
   "engines": {
-    "node": ">= 0.6.x"
+    "node": ">= 0.10.x"
   },
   "scripts": {
     "test": "node test/all.js"
