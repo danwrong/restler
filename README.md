@@ -154,7 +154,7 @@ rest.get('http://twaud.io/api/v1/users/danwrong.xml').on('complete', function(da
   console.log(data[0].sounds[0].sound[0].message); // auto convert to object
 });
 
-rest.get('http://tianji.com',{timeout: 10000}).on('timeout' function(ms){
+rest.get('http://someslowdomain.com',{timeout: 10000}).on('timeout' function(ms){
   console.log('did not return within '+ms+' ms');
 }).on('complete',function(data,response){
   console.log('did not time out');
