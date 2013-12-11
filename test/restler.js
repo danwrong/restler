@@ -1,19 +1,11 @@
-var rest   = require('../lib/restler');
-var http   = require('http');
-var util    = require('util');
-var path   = require('path');
-var fs     = require('fs');
-var crypto = require('crypto');
-var zlib   = null;
-var Iconv  = null;
-
-try {
-  zlib = require('zlib');
-} catch (err) {}
-
-try {
-  Iconv = require('iconv').Iconv;
-} catch (err) {}
+var rest   = require('../lib/restler'),
+    http   = require('http'),
+    util    = require('util'),
+    path   = require('path'),
+    fs     = require('fs'),
+    crypto = require('crypto'),
+    zlib = require('zlib'),
+    Iconv = require('iconv').Iconv;
 
 var port = 9000;
 var hostname = 'localhost';
@@ -21,7 +13,9 @@ var host = 'http://' + hostname + ':' + port;
 
 var nodeunit = require('nodeunit');
 nodeunit.assert.re = function(actual, expected, message) {
-  new RegExp(expected).test(actual) || nodeunit.assert.fail(actual, expected, message, '~=', nodeunit.assert.re);
+  if (!new RegExp(expected).test(actual)) {
+    nodeunit.assert.fail(actual, expected, message, '~=', nodeunit.assert.re);
+  }
 };
 
 
@@ -34,7 +28,9 @@ function setup(response) {
 
 function teardown() {
   return function (next) {
-    this.server._handle && this.server.close();
+    if (this.server._handle) {
+      this.server.close();
+    }
     process.nextTick(next);
   };
 }
@@ -255,10 +251,12 @@ module.exports['Basic'] = {
     function command() {
       var args = [].slice.call(arguments);
       var method = args.shift();
-      method && setTimeout(function() {
-        request[method]();
-        command.apply(null, args);
-      }, 50);
+      if (method) {
+        setTimeout(function() {
+          request[method]();
+          command.apply(null, args);
+        }, 50);
+      }
     }
 
     request = rest.get(host, { headers: { 'x-delay': '1000' } }).on('complete', function() {
@@ -284,7 +282,7 @@ module.exports['Multipart'] = {
       data: { a: 10, b: 'thing' },
       multipart: true
     }).on('complete', function(data) {
-      test.re(data, /content-type\: multipart\/form-data/, 'should set "content-type" header')
+      test.re(data, /content-type\: multipart\/form-data/, 'should set "content-type" header');
       test.re(data, /name="a"(\s)+10/, 'should send a=10');
       test.re(data, /name="b"(\s)+thing/, 'should send b=thing');
       test.re(data, /content-length: 200/, 'should send content-length header');
@@ -371,6 +369,12 @@ function dataResponse(request, response) {
       });
       response.end(Buffer('e0e1e2e3e4e5b8e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', 'hex'));
       break;
+    case '/timeout':
+      setTimeout(function() {
+        response.writeHead(200);
+        response.end('that took a while');
+      }, 100);
+      break;
     default:
       response.writeHead(404);
       response.end();
@@ -404,43 +408,35 @@ module.exports['Deserialization'] = {
   },
 
   'Should gunzip': function(test) {
-    if (zlib) {
-      rest.get(host + '/gzip').on('complete', function(data) {
-        test.re(data, /^(compressed data){10}$/, 'returned: ' + util.inspect(data));
-        test.done();
-      });
-    } else {
+    rest.get(host + '/gzip').on('complete', function(data) {
+      test.re(data, /^(compressed data){10}$/, 'returned: ' + util.inspect(data));
       test.done();
-    }
+    });
   },
 
   'Should inflate': function(test) {
-    if (zlib) {
-      rest.get(host + '/deflate').on('complete', function(data) {
-        test.re(data, /^(compressed data){10}$/, 'returned: ' + util.inspect(data));
-        test.done();
-      })
-    } else {
+    rest.get(host + '/deflate').on('complete', function(data) {
+      test.re(data, /^(compressed data){10}$/, 'returned: ' + util.inspect(data));
       test.done();
-    }
+    });
   },
 
   'Should decode and parse': function(test) {
-    if (zlib) {
-      rest.get(host + '/truth').on('complete', function(data) {
-        try {
-          with (data) {
-            var result = what + (is + the + answer + to + life + the + universe + and + everything).length;
-          }
-          test.equal(result, 42, 'returned: ' + util.inspect(data));
-        } catch (err) {
-          test.ok(false, 'returned: ' + util.inspect(data));
-        }
-        test.done();
-      })
-    } else {
+    rest.get(host + '/truth').on('complete', function(data) {
+      var expected = {
+            what: -6,
+            is: {},
+            the: [ 0, 0, 0 ],
+            answer: 'answer',
+            to: 2,
+            life: 'life',
+            universe: null,
+            and: 3.14,
+            everything: true
+          };
+      test.deepEqual(data, expected, 'returned: ' + util.inspect(data));
       test.done();
-    }
+    });
   },
 
   'Should decode as buffer': function(test) {
@@ -448,7 +444,7 @@ module.exports['Deserialization'] = {
       test.ok(data instanceof Buffer, 'should be buffer');
       test.equal(data.toString('base64'), 'CR5Ah8g=', 'returned: ' + util.inspect(data));
       test.done();
-    })
+    });
   },
 
   'Should decode as binary': function(test) {
@@ -456,7 +452,7 @@ module.exports['Deserialization'] = {
       test.ok(typeof data == 'string', 'should be string: ' + util.inspect(data));
       test.equal(data, '\t\u001e@È', 'returned: ' + util.inspect(data));
       test.done();
-    })
+    });
   },
 
   'Should decode as base64': function(test) {
@@ -464,7 +460,7 @@ module.exports['Deserialization'] = {
       test.ok(typeof data == 'string', 'should be string: ' + util.inspect(data));
       test.equal(data, 'CR5Ah8g=', 'returned: ' + util.inspect(data));
       test.done();
-    })
+    });
   },
 
   'Should post and parse JSON': function(test) {
@@ -477,7 +473,7 @@ module.exports['Deserialization'] = {
     }).on('complete', function(data) {
       test.equal(obj.secret, data.secret, 'returned: ' + util.inspect(data));
       test.done();
-    })
+    });
   },
 
   'Should post and parse JSON via shortcut method': function(test) {
@@ -491,7 +487,9 @@ module.exports['Deserialization'] = {
   'Should understand custom mime-type': function(test) {
     rest.parsers.auto.matchers['application/vnd.github+json'] = function(data, callback) {
       rest.parsers.json.call(this, data, function(err, data) {
-        err || (data.__parsedBy__ = 'github');
+        if (!err) {
+          data.__parsedBy__ = 'github';
+        }
         callback(err, data);
       });
     };
@@ -609,8 +607,8 @@ function redirectResponse(request, response) {
     });
     response.end('redirect');
   } else {
-    var count = parseInt(request.url.substr(1));
-    var max = parseInt(request.headers['x-redirects']);
+    var count = parseInt(request.url.substr(1), 10);
+    var max = parseInt(request.headers['x-redirects'], 10);
     response.writeHead(count < max ? 301 : 200, {
       'location': host + '/' + (count + 1)
     });
@@ -677,9 +675,25 @@ module.exports['Content-Length'] = {
 
   'None data request content length': function (test) {
     rest.post(host).on('complete', function(data) {
-      test.equal(0, data, 'should set content-length')
+      test.equal(0, data, 'should set content-length');
       test.done();
-    })
+    });
   }
 
+};
+
+module.exports['Timeout'] = {
+  setUp: setup(dataResponse),
+  tearDown: teardown(),
+
+  'will timeout within given time': function(test) {
+    rest.get(host + '/timeout', {timeout: 50})
+    .on('timeout', function () {
+      test.ok(true, 'timeout endpoint is 100ms and timeout was 50ms');
+      test.done();
+    })
+    .on('complete', function () {
+      test.ok(false, 'should not emit complete event');
+    });
+  }
 };
