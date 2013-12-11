@@ -369,6 +369,12 @@ function dataResponse(request, response) {
       });
       response.end(Buffer('e0e1e2e3e4e5b8e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff', 'hex'));
       break;
+    case '/timeout':
+      setTimeout(function() {
+        response.writeHead(200);
+        response.end('that took a while');
+      }, 100);
+      break;
     default:
       response.writeHead(404);
       response.end();
@@ -669,9 +675,25 @@ module.exports['Content-Length'] = {
 
   'None data request content length': function (test) {
     rest.post(host).on('complete', function(data) {
-      test.equal(0, data, 'should set content-length')
+      test.equal(0, data, 'should set content-length');
       test.done();
-    })
+    });
   }
 
+};
+
+module.exports['Timeout'] = {
+  setUp: setup(dataResponse),
+  tearDown: teardown(),
+
+  'will timeout within given time': function(test) {
+    rest.get(host + '/timeout', {timeout: 50})
+    .on('timeout', function () {
+      test.ok(true, 'timeout endpoint is 100ms and timeout was 50ms');
+      test.done();
+    })
+    .on('complete', function () {
+      test.ok(false, 'should not emit complete event');
+    });
+  }
 };
