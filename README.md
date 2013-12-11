@@ -155,9 +155,9 @@ rest.get('http://twaud.io/api/v1/users/danwrong.xml').on('complete', function(da
 });
 
 rest.get('http://tianji.com',{timeout: 10000}).on('timeout' function(ms){
-  sys.puts('did not return within '+ms+' ms');
+  console.log('did not return within '+ms+' ms');
 }).on('complete',function(data,response){
-  sys.puts('did not time out');
+  console.log('did not time out');
 });
 
 rest.post('http://user:pass@service.com/action', {
