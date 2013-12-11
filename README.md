@@ -53,6 +53,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 * `fail: function(data, response)` - emitted when the request was successful, but 4xx status code returned. Gets passed the response data and the response object as arguments.
 * `error: function(err, response)` - emitted when some errors have occurred (eg. connection aborted, parse, encoding, decoding failed or some other unhandled errors). Gets passed the `Error` object and the response object (when available) as arguments.
 * `abort: function()` - emitted when `request.abort()` is called.
+* `timeout: function(ms)` - when a request takes more than the timeout option eg: {timeout:5000}, the request will be aborted. error and abort events will not be called, instead timeout will be emitted.
 * `2XX`, `3XX`, `4XX`, `5XX: function(data, response)` - emitted for all requests with response codes in the range (eg. `2XX` emitted for 200, 201, 203).
 * <code><i>actual response code</i>: function(data, response)</code> - emitted for every single response code (eg. 404, 201, etc).
 
@@ -127,6 +128,7 @@ Also you can use `json()` and `postJson()` methods.
 * `multipart` If set the data passed will be formated as `multipart/form-encoded`. See multipart example below. Defaults to `false`.
 * `client` A http.Client instance if you want to reuse or implement some kind of connection pooling. Defaults to empty.
 * `followRedirects` If set will recursively follow redirects. Defaults to `true`.
+* `timeout` If set, will emit the timeout event when the response does not return within the said value (in ms)
 
 
 Example usage
@@ -150,6 +152,12 @@ rest.get('http://twaud.io/api/v1/users/danwrong.json').on('complete', function(d
 
 rest.get('http://twaud.io/api/v1/users/danwrong.xml').on('complete', function(data) {
   console.log(data[0].sounds[0].sound[0].message); // auto convert to object
+});
+
+rest.get('http://tianji.com',{timeout: 10000}).on('timeout' function(ms){
+  sys.puts('did not return within '+ms+' ms');
+}).on('complete',function(data,response){
+  sys.puts('did not time out');
 });
 
 rest.post('http://user:pass@service.com/action', {
