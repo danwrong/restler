@@ -1,6 +1,8 @@
 Restler
 =======
 
+[![NPM](https://nodei.co/npm/restler.png?downloads=true&stars=true)](https://nodei.co/npm/restler/)
+
 (C) Dan Webb (dan@danwebb.net/@danwrong) 2011, Licensed under the MIT-LICENSE
 
 An HTTP client library for node.js (0.10.x and up).  Hides most of the complexity of creating and using http.Client.
