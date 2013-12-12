@@ -3,9 +3,7 @@ var rest   = require('../lib/restler'),
     util    = require('util'),
     path   = require('path'),
     fs     = require('fs'),
-    crypto = require('crypto'),
-    zlib = require('zlib'),
-    Iconv = require('iconv').Iconv;
+    crypto = require('crypto');
 
 var port = 9000;
 var hostname = 'localhost';
@@ -587,14 +585,13 @@ module.exports['Deserialization'] = {
 
 };
 
-if (Iconv) {
-  module.exports['Deserialization']['Should correctly convert charsets '] = function(test) {
-    rest.get(host + '/charset').on('complete', function(data) {
-      test.equal(data, 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя');
-      test.done();
-    });
-  };
-}
+
+module.exports['Deserialization']['Should correctly convert charsets '] = function(test) {
+  rest.get(host + '/charset').on('complete', function(data) {
+    test.equal(data, 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя');
+    test.done();
+  });
+};
 
 
 function redirectResponse(request, response) {
