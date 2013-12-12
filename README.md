@@ -36,7 +36,7 @@ Features
 * Deals with basic auth for you, just provide username and password options
 * Simple service wrapper that allows you to easily put together REST API libraries
 * Transparently handle content-encoded responses (gzip, deflate)
-* Transparently handle different content charsets via [iconv](https://github.com/bnoordhuis/node-iconv)
+* Transparently handle different content charsets via [iconv-lite](https://github.com/ashtuchkin/iconv-lite)
 
 
 API
