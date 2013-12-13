@@ -30,7 +30,7 @@ Features
 * Easy interface for common operations via http.request
 * Automatic serialization of post data
 * Automatic serialization of query string data
-* Automatic deserialization of XML, JSON and YAML responses to JavaScript objects (if you have js-yaml and/or xml2js in the require path)
+* Automatic deserialization of XML, JSON and YAML responses to JavaScript objects
 * Provide your own deserialization functions for other datatypes
 * Automatic following of redirects
 * Send files with multipart requests
