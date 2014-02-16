@@ -98,6 +98,9 @@ Send json `data` via GET method.
 
 Send json `data` via POST method.
 
+### putJson(url, data, options)
+
+Send json `data` via PUT method.
 
 ### Parsers
 
