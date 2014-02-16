@@ -206,6 +206,12 @@ rest.postJson('http://example.com/action', jsonData).on('complete', function(dat
   // handle response
 });
 
+// put JSON
+var jsonData = { id: 334 };
+rest.putJson('http://example.com/action', jsonData).on('complete', function(data, response) {
+  // handle response
+});
+
 ```
 
 TODO
