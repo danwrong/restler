@@ -98,6 +98,9 @@ Send json `data` via GET method.
 
 Send json `data` via POST method.
 
+### putJson(url, data, options)
+
+Send json `data` via PUT method.
 
 ### Parsers
 
@@ -203,6 +206,12 @@ client.update('Tweeting using a Restler service thingy').on('complete', function
 // post JSON
 var jsonData = { id: 334 };
 rest.postJson('http://example.com/action', jsonData).on('complete', function(data, response) {
+  // handle response
+});
+
+// put JSON
+var jsonData = { id: 334 };
+rest.putJson('http://example.com/action', jsonData).on('complete', function(data, response) {
   // handle response
 });
 
