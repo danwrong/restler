@@ -134,6 +134,7 @@ Also you can use `json()` and `postJson()` methods.
 * `client` A http.Client instance if you want to reuse or implement some kind of connection pooling. Defaults to empty.
 * `followRedirects` If set will recursively follow redirects. Defaults to `true`.
 * `timeout` If set, will emit the timeout event when the response does not return within the said value (in ms)
+* `rejectUnauthorized` If true, the server certificate is verified against the list of supplied CAs. An 'error' event is emitted if verification fails. Verification happens at the connection level, before the HTTP request is sent. Default true.
 
 
 Example usage
