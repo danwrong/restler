@@ -130,6 +130,7 @@ Also you can use `json()` and `postJson()` methods.
 * `headers` A hash of HTTP headers to be sent. Defaults to `{ 'Accept': '*/*', 'User-Agent': 'Restler for node.js' }`.
 * `username` Basic auth username. Defaults to empty.
 * `password` Basic auth password. Defaults to empty.
+* `accessToken` OAuth Bearer Token. Defaults to empty.
 * `multipart` If set the data passed will be formated as `multipart/form-encoded`. See multipart example below. Defaults to `false`.
 * `client` A http.Client instance if you want to reuse or implement some kind of connection pooling. Defaults to empty.
 * `followRedirects` If set will recursively follow redirects. Defaults to `true`.
