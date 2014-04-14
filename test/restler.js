@@ -163,6 +163,13 @@ module.exports['Basic'] = {
     });
   },
 
+  'Should send Bearer auth': function(test) {
+    rest.post(host, { accessToken: 't0k3n' }).on('complete', function(data) {
+      test.re(data, /authorization\: Bearer t0k3n/, 'should have "authorization "header');
+      test.done();
+    });
+  },
+
   'Should send basic auth': function(test) {
     rest.post(host, { username: 'danwrong', password: 'flange' }).on('complete', function(data) {
       test.re(data, /authorization\: Basic ZGFud3Jvbmc6Zmxhbmdl/, 'should have "authorization "header');
