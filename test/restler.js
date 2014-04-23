@@ -294,7 +294,26 @@ module.exports['Multipart'] = {
 
       test.done();
     });
-  }
+  },
+
+  'Test multipart request with Data vars': function(test) {
+    rest.post(host, {
+      data: {
+        a: 10,
+        b: rest.data('b.txt', 'text/plain', 'thing'),
+        c: rest.data('c.txt', 'text/plain', new Buffer('thing'))
+      },
+      multipart: true
+    }).on('complete', function(data) {
+      test.re(data, /content-type\: multipart\/form-data/, 'should set "content-type" header');
+      test.re(data, /name="a"(\s)+10/, 'should send a=10');
+      test.re(data, /name="b"; filename="b.txt"\s+Content-Length: 5\s+Content-Type: text\/plain\s+thing\s/, 'should send b=thing');
+      test.re(data, /name="c"; filename="c.txt"\s+Content-Length: 5\s+Content-Type: text\/plain\s+thing\s/, 'should send c=thing');
+      test.re(data, /content-length: 410/, 'should send content-length header');
+
+      test.done();
+    });
+  },
 
 };
 
