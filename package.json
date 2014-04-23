@@ -1,18 +1,39 @@
 {
-    "name": "restler",
-    "version": "2.0.1",
-    "description": "An HTTP client library for node.js",
-    "contributors": [{ "name": "Dan Webb", "email": "dan@danwebb.net" }],
-    "homepage": "https://github.com/danwrong/restler",
-    "directories" : { "lib" : "./lib" },
-    "main" : "./lib/restler",
-    "engines": { "node": ">= 0.6.x" },
-    "dependencies": {
+  "name": "restler",
+  "version": "3.2.1",
+  "description": "An HTTP client library for node.js",
+  "contributors": [
+    {
+      "name": "Dan Webb",
+      "email": "dan@danwebb.net"
     },
-    "devDependencies": {
-        "nodeunit": ">=0.5.0",
-        "xml2js"  : ">=0.1.0",
-        "yaml"    : ">=0.2.0",
-        "iconv": ">=1.0.0"
+    {
+      "name": "Ben Marvell",
+      "email": "ben@marvell-consulting.com"
     }
+  ],
+  "homepage": "https://github.com/danwrong/restler",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/danwrong/restler.git"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "main": "./lib/restler",
+  "engines": {
+    "node": ">= 0.10.x"
+  },
+  "scripts": {
+    "test": "node test/all.js"
+  },
+  "dependencies": {
+    "qs": "0.6.6",
+    "xml2js": "0.4.0",
+    "yaml": "0.2.3",
+    "iconv-lite": "0.2.11"
+  },
+  "devDependencies": {
+    "nodeunit": "0.8.2"
+  }
 }

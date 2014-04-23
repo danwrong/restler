@@ -1,15 +1,27 @@
 Restler
 =======
 
+[![NPM](https://nodei.co/npm/restler.png?downloads=true&stars=true)](https://nodei.co/npm/restler/)
+
 (C) Dan Webb (dan@danwebb.net/@danwrong) 2011, Licensed under the MIT-LICENSE
 
-An HTTP client library for node.js (0.6.x and up).  Hides most of the complexity of creating and using http.Client.
-
-**Release 2.x.x** is dedicated to modifying how errors are handled and emitted. Currently errors are being fired as an on 'error' event but as [@ctavan](https://github.com/ctavan) pointed out on [issue #36](https://github.com/danwrong/restler/pull/36) a better approach (and more commonly in vogue now) would be to pass the error obj to the callback.
-
-Ths change will inevitably affect those using older < 0.2.x versions of restler. Those not ready to upgrade yet are encouraged to stay on the 0.2.x version.
+An HTTP client library for node.js (0.10.x and up).  Hides most of the complexity of creating and using http.Client.
 
 See [Version History](https://github.com/danwrong/restler/wiki/Version-History) for changes
+
+Installing
+----------
+
+```
+npm install restler
+```
+
+Running the tests
+-----------------
+
+```
+npm test
+```
 
 
 Features
@@ -18,15 +30,15 @@ Features
 * Easy interface for common operations via http.request
 * Automatic serialization of post data
 * Automatic serialization of query string data
-* Automatic deserialization of XML, JSON and YAML responses to JavaScript objects (if you have js-yaml and/or xml2js in the require path)
+* Automatic deserialization of XML, JSON and YAML responses to JavaScript objects
 * Provide your own deserialization functions for other datatypes
 * Automatic following of redirects
 * Send files with multipart requests
 * Transparently handle SSL (just specify https in the URL)
 * Deals with basic auth for you, just provide username and password options
 * Simple service wrapper that allows you to easily put together REST API libraries
-* Transparently handle content-encoded responses (gzip, deflate) (requires node 0.6+)
-* Transparently handle different content charsets via [iconv](https://github.com/bnoordhuis/node-iconv) (if available)
+* Transparently handle content-encoded responses (gzip, deflate)
+* Transparently handle different content charsets via [iconv-lite](https://github.com/ashtuchkin/iconv-lite)
 
 
 API
@@ -43,6 +55,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 * `fail: function(data, response)` - emitted when the request was successful, but 4xx status code returned. Gets passed the response data and the response object as arguments.
 * `error: function(err, response)` - emitted when some errors have occurred (eg. connection aborted, parse, encoding, decoding failed or some other unhandled errors). Gets passed the `Error` object and the response object (when available) as arguments.
 * `abort: function()` - emitted when `request.abort()` is called.
+* `timeout: function(ms)` - when a request takes more than the timeout option eg: {timeout:5000}, the request will be aborted. error and abort events will not be called, instead timeout will be emitted.
 * `2XX`, `3XX`, `4XX`, `5XX: function(data, response)` - emitted for all requests with response codes in the range (eg. `2XX` emitted for 200, 201, 203).
 * <code><i>actual response code</i>: function(data, response)</code> - emitted for every single response code (eg. 404, 201, etc).
 
@@ -73,6 +86,10 @@ Create a DELETE request.
 
 Create a HEAD request.
 
+### patch(url, options)
+
+Create a PATCH request.
+
 ### json(url, data, options)
 
 Send json `data` via GET method.
@@ -81,6 +98,9 @@ Send json `data` via GET method.
 
 Send json `data` via POST method.
 
+### putJson(url, data, options)
+
+Send json `data` via PUT method.
 
 ### Parsers
 
@@ -98,7 +118,7 @@ All of these attempt to turn the response into a JavaScript object. In order to 
 
 ### Options
 
-* `method` Request method, can be get, post, put, del. Defaults to `"get"`.
+* `method` Request method, can be get, post, put, delete. Defaults to `"get"`.
 * `query` Query string variables as a javascript object, will override the querystring in the URL. Defaults to empty.
 * `data` The data to be added to the body of the request. Can be a string or any object.
 Note that if you want your request body to be JSON with the `Content-Type: application/json`, you need to
@@ -106,37 +126,45 @@ Note that if you want your request body to be JSON with the `Content-Type: appli
 Also you can use `json()` and `postJson()` methods.
 * `parser` A function that will be called on the returned data. Use any of predefined `restler.parsers`. See parsers section below. Defaults to `restler.parsers.auto`.
 * `encoding` The encoding of the request body. Defaults to `"utf8"`.
-* `decoding` The encoding of the response body. For a list of supported values see [Buffers](http://nodejs.org/docs/latest/api/buffers.html#buffers). Additionally accepts `"buffer"` - returns response as `Buffer`. Defaults to `"utf8"`.
+* `decoding` The encoding of the response body. For a list of supported values see [Buffers](http://nodejs.org/api/buffer.html#buffer_buffer). Additionally accepts `"buffer"` - returns response as `Buffer`. Defaults to `"utf8"`.
 * `headers` A hash of HTTP headers to be sent. Defaults to `{ 'Accept': '*/*', 'User-Agent': 'Restler for node.js' }`.
 * `username` Basic auth username. Defaults to empty.
 * `password` Basic auth password. Defaults to empty.
+* `accessToken` OAuth Bearer Token. Defaults to empty.
 * `multipart` If set the data passed will be formated as `multipart/form-encoded`. See multipart example below. Defaults to `false`.
 * `client` A http.Client instance if you want to reuse or implement some kind of connection pooling. Defaults to empty.
 * `followRedirects` If set will recursively follow redirects. Defaults to `true`.
+* `timeout` If set, will emit the timeout event when the response does not return within the said value (in ms)
+* `rejectUnauthorized` If true, the server certificate is verified against the list of supplied CAs. An 'error' event is emitted if verification fails. Verification happens at the connection level, before the HTTP request is sent. Default true.
 
 
 Example usage
 -------------
 
 ```javascript
-var sys = require('util'),
-    rest = require('./restler');
+var rest = require('./restler');
 
 rest.get('http://google.com').on('complete', function(result) {
   if (result instanceof Error) {
-    sys.puts('Error: ' + result.message);
+    console.log('Error:', result.message);
     this.retry(5000); // try again after 5 sec
   } else {
-    sys.puts(result);
+    console.log(result);
   }
 });
 
 rest.get('http://twaud.io/api/v1/users/danwrong.json').on('complete', function(data) {
-  sys.puts(data[0].message); // auto convert to object
+  console.log(data[0].message); // auto convert to object
 });
 
 rest.get('http://twaud.io/api/v1/users/danwrong.xml').on('complete', function(data) {
-  sys.puts(data[0].sounds[0].sound[0].message); // auto convert to object
+  console.log(data[0].sounds[0].sound[0].message); // auto convert to object
+});
+
+rest.get('http://someslowdomain.com',{timeout: 10000}).on('timeout', function(ms){
+  console.log('did not return within '+ms+' ms');
+}).on('complete',function(data,response){
+  console.log('did not time out');
 });
 
 rest.post('http://user:pass@service.com/action', {
@@ -157,7 +185,7 @@ rest.post('https://twaud.io/api/v1/upload.json', {
     'sound[file]': rest.file('doug-e-fresh_the-show.mp3', null, 321567, null, 'audio/mpeg')
   }
 }).on('complete', function(data) {
-  sys.puts(data.audio_url);
+  console.log(data.audio_url);
 });
 
 // create a service constructor for very easy API wrappers a la HTTParty...
@@ -174,7 +202,7 @@ Twitter = rest.service(function(u, p) {
 
 var client = new Twitter('danwrong', 'password');
 client.update('Tweeting using a Restler service thingy').on('complete', function(data) {
-  sys.p(data);
+  console.log(data);
 });
 
 // post JSON
@@ -183,26 +211,12 @@ rest.postJson('http://example.com/action', jsonData).on('complete', function(dat
   // handle response
 });
 
-```
+// put JSON
+var jsonData = { id: 334 };
+rest.putJson('http://example.com/action', jsonData).on('complete', function(data, response) {
+  // handle response
+});
 
-Running the tests
------------------
-install **[nodeunit](https://github.com/caolan/nodeunit)**
-
-```bash
-npm install nodeunit
-```
-
-then
-
-```bash
-node test/all.js
-```
-
-or
-
-```bash
-nodeunit test/restler.js
 ```
 
 TODO
