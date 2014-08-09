@@ -28,7 +28,7 @@
     "test": "node test/all.js"
   },
   "dependencies": {
-    "qs": "0.6.6",
+    "qs": "1.2.0",
     "xml2js": "0.4.0",
     "yaml": "0.2.3",
     "iconv-lite": "0.2.11"
