@@ -145,6 +145,13 @@ module.exports['Basic'] = {
     });
   },
 
+  'Should POST buffer body': function(test) {
+    rest.post(host, { data: new Buffer('balls') }).on('complete', function(data) {
+      test.re(data, /\r\n\r\nballs/, 'should have balls in the body');
+      test.done();
+    });
+  },
+
   'Should serialize POST body': function(test) {
     rest.post(host, { data: { q: 'balls' } }).on('complete', function(data) {
       test.re(data, /content-type\: application\/x-www-form-urlencoded/, 'should set content-type');
