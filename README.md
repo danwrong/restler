@@ -1,11 +1,8 @@
-Restler
-=======
-
-[![NPM](https://nodei.co/npm/restler.png?downloads=true&stars=true)](https://nodei.co/npm/restler/)
+# Restler [![NPM Version](https://img.shields.io/npm/v/restler.svg?style=flat)](https://www.npmjs.com/package/restler) ![Node Version](https://img.shields.io/node/v/restler.svg?style=flat) ![Downloads](https://img.shields.io/npm/dm/restler.svg?style=flat)
 
 (C) Dan Webb (dan@danwebb.net/@danwrong) 2011, Licensed under the MIT-LICENSE
 
-An HTTP client library for node.js (0.10.x and up).  Hides most of the complexity of creating and using http.Client.
+An HTTP client library for node.js.  Hides most of the complexity of creating and using http.Client.
 
 See [Version History](https://github.com/danwrong/restler/wiki/Version-History) for changes
 
