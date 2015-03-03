@@ -50,7 +50,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 
 * `complete: function(result, response)` - emitted when the request has finished whether it was successful or not. Gets passed the response result and the response object as arguments. If some error has occurred, `result` is always instance of `Error`, otherwise it contains response data.
 * `success: function(data, response)` - emitted when the request was successful. Gets passed the response data and the response object as arguments.
-* `fail: function(data, response)` - emitted when the request was successful, but 4xx status code returned. Gets passed the response data and the response object as arguments.
+* `fail: function(data, response)` - emitted when the request was successful, but 4XX or 5XX status code returned. Gets passed the response data and the response object as arguments.
 * `error: function(err, response)` - emitted when some errors have occurred (eg. connection aborted, parse, encoding, decoding failed or some other unhandled errors). Gets passed the `Error` object and the response object (when available) as arguments.
 * `abort: function()` - emitted when `request.abort()` is called.
 * `timeout: function(ms)` - when a request takes more than the timeout option eg: {timeout:5000}, the request will be aborted. error and abort events will not be called, instead timeout will be emitted.
