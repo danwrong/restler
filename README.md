@@ -100,6 +100,10 @@ Send json `data` via POST method.
 
 Send json `data` via PUT method.
 
+### patchJson(url, data, options)
+
+Send json `data` via PATCH method.
+
 ### Parsers
 
 You can give any of these to the parsers option to specify how the response data is deserialized.
