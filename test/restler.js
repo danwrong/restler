@@ -335,6 +335,10 @@ function dataResponse(request, response) {
       response.writeHead(200, { 'content-type': 'application/xml' });
       response.end('<document><ok>true</ok></document>');
       break;
+    case '/big-xml':
+      response.writeHead(200, { 'content-type': 'application/xml' });
+      response.end('<documents type="array"><document><ok>true</ok></document></documents>');
+      break;
     case '/yaml':
       response.writeHead(200, { 'content-type': 'application/yaml' });
       response.end('ok: true');
@@ -427,6 +431,13 @@ module.exports['Deserialization'] = {
   'Should parse XML': function(test) {
     rest.get(host + '/xml').on('complete', function(data, response) {
       test.equal(data.document.ok[0], 'true', 'returned: ' + response.raw + ' parsed to ' + util.inspect(data));
+      test.done();
+    });
+  },
+
+  'Should parse XML with xml2js options': function(test) {
+    rest.get(host + '/big-xml', {xml2js: {explicitArray: false,ignoreAttrs: true}}).on('complete', function(data, response) {
+      test.equal(data.documents.document.ok, 'true', 'returned: ' + response.raw + ' parsed to ' + util.inspect(data));
       test.done();
     });
   },

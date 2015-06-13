@@ -123,6 +123,7 @@ Note that if you want your request body to be JSON with the `Content-Type: appli
 `JSON.stringify` your object first. Otherwise, it will be sent as `application/x-www-form-urlencoded` and encoded accordingly.
 Also you can use `json()` and `postJson()` methods.
 * `parser` A function that will be called on the returned data. Use any of predefined `restler.parsers`. See parsers section below. Defaults to `restler.parsers.auto`.
+* `xml2js` [Options](https://github.com/Leonidas-from-XIV/node-xml2js#options) for xml2js
 * `encoding` The encoding of the request body. Defaults to `"utf8"`.
 * `decoding` The encoding of the response body. For a list of supported values see [Buffers](http://nodejs.org/api/buffer.html#buffer_buffer). Additionally accepts `"buffer"` - returns response as `Buffer`. Defaults to `"utf8"`.
 * `headers` A hash of HTTP headers to be sent. Defaults to `{ 'Accept': '*/*', 'User-Agent': 'Restler for node.js' }`.
