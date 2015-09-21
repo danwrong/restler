@@ -534,6 +534,14 @@ module.exports['Deserialization'] = {
     });
   },
 
+  'Should patch and parse JSON via shortcut method': function(test) {
+    var obj = { secret : 'very secret string' };
+    rest.patchJson(host + '/push-json', obj).on('complete', function(data) {
+      test.equal(obj.secret, data.secret, 'returned: ' + util.inspect(data));
+      test.done();
+    });
+  },
+
   'Should understand custom mime-type': function(test) {
     rest.parsers.auto.matchers['application/vnd.github+json'] = function(data, callback) {
       rest.parsers.json.call(this, data, function(err, data) {
