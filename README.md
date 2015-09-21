@@ -139,7 +139,7 @@ Also you can use `json()` and `postJson()` methods.
 * `followRedirects` If set will recursively follow redirects. Defaults to `true`.
 * `timeout` If set, will emit the timeout event when the response does not return within the said value (in ms)
 * `rejectUnauthorized` If true, the server certificate is verified against the list of supplied CAs. An 'error' event is emitted if verification fails. Verification happens at the connection level, before the HTTP request is sent. Default true.
-
+* `agent` [HTTP Agent][http-agent-doc] instance to use. If not defined [globalAgent][http-global-agent-doc] will be used. If false opts out of connection pooling with an Agent, defaults request to Connection: close.
 
 Example usage
 -------------
@@ -225,3 +225,6 @@ rest.putJson('http://example.com/action', jsonData).on('complete', function(data
 TODO
 ----
 * What do you need? Let me know or fork.
+
+[http-agent-doc]: https://nodejs.org/api/http.html#http_class_http_agent
+[http-global-agent-doc]: https://nodejs.org/api/http.html#http_http_globalagent 
