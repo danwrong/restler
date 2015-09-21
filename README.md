@@ -59,7 +59,7 @@ Basic method to make a request of any type. The function returns a RestRequest o
 
 #### members
 
-* `abort([error])` Cancels request. `abort` event is emitted. `request.aborted` is set to `true`. If non-falsy `error` is passed, then `error` will be additionaly emitted (with `error` passed as a param and `error.type` is set to `"abort"`). Otherwise only `complete` event will raise.
+* `abort([error])` Cancels request. `abort` event is emitted. `request.aborted` is set to `true`. If non-falsy `error` is passed, then `error` will be additionally emitted (with `error` passed as a param and `error.type` is set to `"abort"`). Otherwise only `complete` event will raise.
 * `retry([timeout])` Re-sends request after `timeout` ms. Pending request is aborted.
 * `aborted` Determines if request was aborted.
 
@@ -130,7 +130,7 @@ Also you can use `json()` and `postJson()` methods.
 * `username` Basic auth username. Defaults to empty.
 * `password` Basic auth password. Defaults to empty.
 * `accessToken` OAuth Bearer Token. Defaults to empty.
-* `multipart` If set the data passed will be formated as `multipart/form-encoded`. See multipart example below. Defaults to `false`.
+* `multipart` If set the data passed will be formatted as `multipart/form-encoded`. See multipart example below. Defaults to `false`.
 * `client` A http.Client instance if you want to reuse or implement some kind of connection pooling. Defaults to empty.
 * `followRedirects` If set will recursively follow redirects. Defaults to `true`.
 * `timeout` If set, will emit the timeout event when the response does not return within the said value (in ms)
